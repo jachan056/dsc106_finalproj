@@ -1,1 +1,242 @@
-sss
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Where the Rain Falls</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1016;
+      --surface: #111820;
+      --text: #e8dfc8;
+      --muted: #8a9aaa;
+      --teal: #3ecfb2;
+      --line: rgba(232,223,200,0.1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Source Sans 3', sans-serif;
+      font-weight: 300;
+      line-height: 1.75;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-rain { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .raindrop {
+      position: absolute;
+      width: 1.5px;
+      background: linear-gradient(to bottom, transparent, rgba(62,207,178,0.35));
+      border-radius: 2px;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      from { transform: translateY(-120px); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.6; }
+      to   { transform: translateY(110vh); opacity: 0; }
+    }
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      line-height: 1.1;
+      max-width: 900px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 em { font-style: italic; color: var(--teal); }
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 580px;
+      margin-bottom: 2rem;
+    }
+    .hero-byline { font-size: 0.8rem; letter-spacing: 0.15em; color: var(--muted); }
+    .hero-scroll {
+      margin-top: 3rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      color: var(--muted); font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    .hero-scroll svg { width: 20px; }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* VIZ SECTION */
+    .viz-section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 2rem 8rem;
+    }
+    .viz-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 0.8rem;
+    }
+    .viz-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .viz-section p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 680px;
+      margin-bottom: 2rem;
+    }
+    .viz-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 2rem;
+    }
+    .viz-card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+    .viz-card-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+    svg text { font-family: 'Source Sans 3', sans-serif; }
+
+    footer {
+      text-align: center;
+      padding: 2.5rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+    footer a { color: var(--teal); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-rain" id="rain-canvas"></div>
+  <p class="hero-eyebrow">DSC 106 · Spring 2026 · UC San Diego</p>
+  <h1>Where the <em>Rain Falls</em></h1>
+  <p class="hero-sub">Global warming is often told through temperature. But the future of humanity hinges on something more immediate — where water will fall, and where it will vanish.</p>
+  <p class="hero-byline">Jookyoung Lee &nbsp;·&nbsp; Scott Huang &nbsp;·&nbsp; Ja-Chan Lu</p>
+  <div class="hero-scroll">
+    <span>Scroll to explore</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+</section>
+
+<section class="viz-section">
+  <p class="viz-label">Visualization 1</p>
+  <h2>The baseline seasonal rhythm</h2>
+  <p>Before projecting change, we establish the historical baseline. Globally averaged precipitation peaks in <strong style="color:var(--text)">June–July</strong> and troughs in winter months — using CESM2 model output from the 1980–2010 historical period.</p>
+  <div class="viz-card">
+    <div class="viz-card-title">Global Precipitation Seasonal Cycle · 1980–2010 Baseline</div>
+    <div class="viz-card-sub">CESM2 · r1i1p1f1 · Historical run · Global spatial mean (mm/day)</div>
+    <svg id="bar-svg" width="100%" viewBox="0 0 780 280" style="display:block;"></svg>
+  </div>
+</section>
+
+<footer>
+  Data: <a href="https://wcrp-cmip.org/cmip-phases/cmip6/" target="_blank">CMIP6 / CESM2</a> &nbsp;·&nbsp; DSC 106, Spring 2026, UC San Diego
+</footer>
+
+<script>
+// Rain animation
+const rain = document.getElementById('rain-canvas');
+for (let i = 0; i < 55; i++) {
+  const d = document.createElement('div');
+  d.className = 'raindrop';
+  const h = 40 + Math.random() * 80;
+  d.style.cssText = `left:${Math.random()*100}%;height:${h}px;animation-duration:${1.2+Math.random()*2}s;animation-delay:${-Math.random()*4}s;opacity:${0.2+Math.random()*0.4};`;
+  rain.appendChild(d);
+}
+
+// Seasonal bar chart — real CESM2 values from notebook output
+const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const vals   = [2.36, 2.38, 2.37, 2.37, 2.41, 2.51, 2.55, 2.50, 2.44, 2.40, 2.37, 2.36];
+
+const W = 780, H = 280;
+const margin = { top: 24, right: 20, bottom: 44, left: 62 };
+const w = W - margin.left - margin.right;
+const h = H - margin.top - margin.bottom;
+
+const svg = d3.select('#bar-svg');
+const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+const xScale = d3.scaleBand().domain(months).range([0, w]).padding(0.28);
+const yScale = d3.scaleLinear().domain([2.2, 2.65]).range([h, 0]);
+
+// Grid lines
+yScale.ticks(4).forEach(t => {
+  g.append('line')
+    .attr('x1', 0).attr('x2', w).attr('y1', yScale(t)).attr('y2', yScale(t))
+    .attr('stroke', 'rgba(232,223,200,0.07)').attr('stroke-width', 1);
+});
+
+const peak = d3.max(vals);
+
+months.forEach((m, i) => {
+  const isPeak = vals[i] === peak;
+  g.append('rect')
+    .attr('x', xScale(m)).attr('y', yScale(vals[i]))
+    .attr('width', xScale.bandwidth()).attr('height', h - yScale(vals[i]))
+    .attr('fill', isPeak ? '#3ecfb2' : '#3a6a78')
+    .attr('rx', 2);
+
+  g.append('text')
+    .attr('x', xScale(m) + xScale.bandwidth() / 2)
+    .attr('y', yScale(vals[i]) - 5)
+    .attr('text-anchor', 'middle').attr('font-size', 10)
+    .attr('fill', isPeak ? '#3ecfb2' : '#8a9aaa')
+    .text(vals[i].toFixed(2));
+});
+
+// Axes
+g.append('g').attr('transform', `translate(0,${h})`)
+  .call(d3.axisBottom(xScale).tickSize(0))
+  .call(ax => ax.select('.domain').attr('stroke', 'rgba(232,223,200,0.15)'))
+  .call(ax => ax.selectAll('text').attr('fill', '#8a9aaa').attr('font-size', 12).attr('dy', '1.2em'));
+
+g.append('g')
+  .call(d3.axisLeft(yScale).ticks(4))
+  .call(ax => ax.select('.domain').remove())
+  .call(ax => ax.selectAll('.tick line').remove())
+  .call(ax => ax.selectAll('text').attr('fill', '#8a9aaa').attr('font-size', 11));
+
+g.append('text').attr('transform', 'rotate(-90)').attr('x', -h / 2).attr('y', -50)
+  .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#8a9aaa')
+  .text('Global mean precipitation (mm/day)');
+
+g.append('text').attr('x', w / 2).attr('y', h + 38)
+  .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#8a9aaa')
+  .text('Month');
+</script>
+</body>
+</html>
