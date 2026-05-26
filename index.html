@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Where the Rain Falls: Tracking Shifting Global Precipitation Patterns</title>
+  <title>Where the Rain Falls</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0b1016;
-      --surface: #111820;
-      --text: #e8dfc8;
-      --muted: #8a9aaa;
-      --teal: #3ecfb2;
-      --line: rgba(232,223,200,0.1);
+      --bg: #dde4ec;
+      --surface: #eef1f5;
+      --text: #1e2a38;
+      --muted: #5a6e82;
+      --teal: #2b7fbf;
+      --line: rgba(30,42,56,0.12);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -41,7 +41,7 @@
     .raindrop {
       position: absolute;
       width: 1.5px;
-      background: linear-gradient(to bottom, transparent, rgba(62,207,178,0.35));
+      background: linear-gradient(to bottom, transparent, rgba(43,127,191,0.4));
       border-radius: 2px;
       animation: fall linear infinite;
     }
@@ -143,9 +143,14 @@
 <section class="hero">
   <div class="hero-rain" id="rain-canvas"></div>
   <p class="hero-eyebrow">DSC 106 · Spring 2026 · UC San Diego</p>
-  <h1>Where the <em>Rain Falls:</em> Tracking Shifting <em>Global Precipitation Patterns</em></h1>
-  <p class="hero-sub">Global warming is often told through temperature. But the future of humanity hinges on something more immediate: where water will fall and where it will vanish.</p>
+  <h1>Where the <em>Rain Falls</em></h1>
+  <p style="font-family:'Playfair Display',serif;font-size:clamp(0.75rem,1.3vw,1rem);color:var(--muted);font-style:italic;margin-top:-0.8rem;margin-bottom:1.5rem;">Tracking Shifting Global Precipitation Patterns</p>
+  <p class="hero-sub">Global warming is often told through temperature. But the future of humanity hinges on something more immediate — where water will fall, and where it will vanish.</p>
   <p class="hero-byline">Jookyoung Lee &nbsp;·&nbsp; Scott Huang &nbsp;·&nbsp; Ja-Chan Lu</p>
+  <div class="hero-scroll">
+    <span>Scroll to explore</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
 </section>
 
 <section class="viz-section">
@@ -193,7 +198,7 @@ const yScale = d3.scaleLinear().domain([2.2, 2.65]).range([h, 0]);
 yScale.ticks(4).forEach(t => {
   g.append('line')
     .attr('x1', 0).attr('x2', w).attr('y1', yScale(t)).attr('y2', yScale(t))
-    .attr('stroke', 'rgba(232,223,200,0.07)').attr('stroke-width', 1);
+    .attr('stroke', 'rgba(30,42,56,0.08)').attr('stroke-width', 1);
 });
 
 const peak = d3.max(vals);
@@ -203,35 +208,35 @@ months.forEach((m, i) => {
   g.append('rect')
     .attr('x', xScale(m)).attr('y', yScale(vals[i]))
     .attr('width', xScale.bandwidth()).attr('height', h - yScale(vals[i]))
-    .attr('fill', isPeak ? '#3ecfb2' : '#3a6a78')
+    .attr('fill', isPeak ? '#2b7fbf' : '#6a9dbf')
     .attr('rx', 2);
 
   g.append('text')
     .attr('x', xScale(m) + xScale.bandwidth() / 2)
     .attr('y', yScale(vals[i]) - 5)
     .attr('text-anchor', 'middle').attr('font-size', 10)
-    .attr('fill', isPeak ? '#3ecfb2' : '#8a9aaa')
+    .attr('fill', isPeak ? '#2b7fbf' : '#5a6e82')
     .text(vals[i].toFixed(2));
 });
 
 // Axes
 g.append('g').attr('transform', `translate(0,${h})`)
   .call(d3.axisBottom(xScale).tickSize(0))
-  .call(ax => ax.select('.domain').attr('stroke', 'rgba(232,223,200,0.15)'))
-  .call(ax => ax.selectAll('text').attr('fill', '#8a9aaa').attr('font-size', 12).attr('dy', '1.2em'));
+  .call(ax => ax.select('.domain').attr('stroke', 'rgba(30,42,56,0.2)'))
+  .call(ax => ax.selectAll('text').attr('fill', '#5a6e82').attr('font-size', 12).attr('dy', '1.2em'));
 
 g.append('g')
   .call(d3.axisLeft(yScale).ticks(4))
   .call(ax => ax.select('.domain').remove())
   .call(ax => ax.selectAll('.tick line').remove())
-  .call(ax => ax.selectAll('text').attr('fill', '#8a9aaa').attr('font-size', 11));
+  .call(ax => ax.selectAll('text').attr('fill', '#5a6e82').attr('font-size', 11));
 
 g.append('text').attr('transform', 'rotate(-90)').attr('x', -h / 2).attr('y', -50)
-  .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#8a9aaa')
+  .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#5a6e82')
   .text('Global mean precipitation (mm/day)');
 
 g.append('text').attr('x', w / 2).attr('y', h + 38)
-  .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#8a9aaa')
+  .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#5a6e82')
   .text('Month');
 </script>
 </body>
