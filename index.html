@@ -147,13 +147,13 @@
   <p style="font-family:'Playfair Display',serif;font-size:clamp(0.75rem,1.3vw,1rem);color:var(--muted);font-style:italic;margin-top:-0.8rem;margin-bottom:1.5rem;">Tracking Shifting Global Precipitation Patterns</p>
   <p class="hero-sub">Global warming is often told through temperature. But the future of humanity hinges on something more immediate — where water will fall, and where it will vanish.</p>
   <p class="hero-byline">Jookyoung Lee &nbsp;·&nbsp; Scott Huang &nbsp;·&nbsp; Ja-Chan Lu</p>
-  <div class="hero-scroll">
+  <a href="#viz" class="hero-scroll" style="text-decoration: none;">
     <span>Scroll to explore</span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-  </div>
+  </a>
 </section>
 
-<section class="viz-section">
+<section class="viz-section" id="viz">
   <p class="viz-label">Visualization 1</p>
   <h2>The baseline seasonal rhythm</h2>
   <p>Before projecting change, we establish the historical baseline. Globally averaged precipitation peaks in <strong style="color:var(--text)">June–July</strong> and troughs in winter months — using CESM2 model output from the 1980–2010 historical period.</p>
@@ -179,12 +179,19 @@ for (let i = 0; i < 55; i++) {
   rain.appendChild(d);
 }
 
-// Seasonal bar chart — real CESM2 values from notebook output
+// Seasonal bar chart — real CESM2 values
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const vals   = [2.36, 2.38, 2.37, 2.37, 2.41, 2.51, 2.55, 2.50, 2.44, 2.40, 2.37, 2.36];
 
+// Zip data for easier D3 binding
+const dataset = months.map((m, i) => ({ month: m, val: vals[i] }));
+
+// Calculate the exact mean of the historical baseline
+const historicalMean = d3.mean(vals); 
+
 const W = 780, H = 280;
-const margin = { top: 24, right: 20, bottom: 44, left: 62 };
+// Increased right margin to 90 to comfortably fit the "(Mean)" label
+const margin = { top: 24, right: 90, bottom: 44, left: 62 }; 
 const w = W - margin.left - margin.right;
 const h = H - margin.top - margin.bottom;
 
@@ -194,6 +201,21 @@ const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.t
 const xScale = d3.scaleBand().domain(months).range([0, w]).padding(0.28);
 const yScale = d3.scaleLinear().domain([2.2, 2.65]).range([h, 0]);
 
+// ==========================================
+// TOOLTIP SETUP
+// ==========================================
+const tooltip = d3.select("body").append("div")
+  .style("position", "absolute")
+  .style("opacity", 0)
+  .style("background", "#1e2a38")
+  .style("color", "#ffffff")
+  .style("padding", "6px 10px")
+  .style("border-radius", "4px")
+  .style("font-size", "12px")
+  .style("pointer-events", "none")
+  .style("box-shadow", "0 2px 4px rgba(0,0,0,0.2)")
+  .style("z-index", "10");
+
 // Grid lines
 yScale.ticks(4).forEach(t => {
   g.append('line')
@@ -201,23 +223,116 @@ yScale.ticks(4).forEach(t => {
     .attr('stroke', 'rgba(30,42,56,0.08)').attr('stroke-width', 1);
 });
 
-const peak = d3.max(vals);
+// Set the initial threshold to the calculated baseline mean
+let thresholdVal = historicalMean; 
 
-months.forEach((m, i) => {
-  const isPeak = vals[i] === peak;
-  g.append('rect')
-    .attr('x', xScale(m)).attr('y', yScale(vals[i]))
-    .attr('width', xScale.bandwidth()).attr('height', h - yScale(vals[i]))
-    .attr('fill', isPeak ? '#2b7fbf' : '#6a9dbf')
-    .attr('rx', 2);
+// ==========================================
+// DRAW BARS WITH HOVER LOGIC
+// ==========================================
+const bars = g.selectAll('.precip-bar')
+  .data(dataset)
+  .enter()
+  .append('rect')
+  .attr('class', 'precip-bar')
+  .attr('x', d => xScale(d.month))
+  .attr('y', d => yScale(d.val))
+  .attr('width', xScale.bandwidth())
+  .attr('height', d => h - yScale(d.val))
+  .attr('rx', 2)
+  .style('cursor', 'pointer')
+  .style('transition', 'fill 0.15s ease')
+  .on("mouseover", function(event, d) {
+    d3.select(this).attr('fill', '#1a5b8f'); 
+    
+    tooltip.transition().duration(200).style("opacity", 1);
+    tooltip.html(`<strong>${d.month}</strong>: ${d.val} mm/day`)
+      .style("left", (event.pageX + 12) + "px")
+      .style("top", (event.pageY - 28) + "px");
+  })
+  .on("mouseout", function(event, d) {
+    d3.select(this).attr('fill', d.val >= thresholdVal ? '#2b7fbf' : '#b0c4d9');
+    tooltip.transition().duration(300).style("opacity", 0);
+  });
 
-  g.append('text')
-    .attr('x', xScale(m) + xScale.bandwidth() / 2)
-    .attr('y', yScale(vals[i]) - 5)
-    .attr('text-anchor', 'middle').attr('font-size', 10)
-    .attr('fill', isPeak ? '#2b7fbf' : '#5a6e82')
-    .text(vals[i].toFixed(2));
-});
+// Draw Bar Labels
+g.selectAll('.bar-label')
+  .data(dataset)
+  .enter()
+  .append('text')
+  .attr('class', 'bar-label')
+  .attr('x', d => xScale(d.month) + xScale.bandwidth() / 2)
+  .attr('y', d => yScale(d.val) - 5)
+  .attr('text-anchor', 'middle')
+  .attr('font-size', 10)
+  .text(d => d.val.toFixed(2));
+
+// ==========================================
+// DRAGGABLE REFERENCE LINE LOGIC
+// ==========================================
+
+function updateBarColors(threshold) {
+  bars.attr('fill', d => d.val >= threshold ? '#2b7fbf' : '#b0c4d9');
+  g.selectAll('.bar-label')
+     .attr('fill', d => d.val >= threshold ? '#2b7fbf' : '#5a6e82');
+}
+
+const dragBehavior = d3.drag()
+  .on("drag", function(event) {
+    let newY = event.y;
+    if (newY < 0) newY = 0;
+    if (newY > h) newY = h;
+
+    // --- NEW: Snap to mean ---
+    // If the user drags within 5 pixels of the mean, snap exactly to it
+    const meanY = yScale(historicalMean);
+    if (Math.abs(newY - meanY) < 5) {
+        newY = meanY;
+    }
+
+    thresholdVal = yScale.invert(newY);
+
+    d3.select(this).attr("transform", `translate(0, ${newY})`);
+    
+    // --- NEW: Conditional text label ---
+    // Check if the current value matches the mean (rounded to 2 decimal places)
+    if (thresholdVal.toFixed(2) === historicalMean.toFixed(2)) {
+        d3.select("#threshold-label").text(thresholdVal.toFixed(2) + " mm (Mean)");
+    } else {
+        d3.select("#threshold-label").text(thresholdVal.toFixed(2) + " mm");
+    }
+
+    updateBarColors(thresholdVal);
+  });
+
+const dragGroup = g.append("g")
+  .attr("transform", `translate(0, ${yScale(thresholdVal)})`)
+  .style("cursor", "ns-resize")
+  .call(dragBehavior);
+
+dragGroup.append("line")
+  .attr("x1", 0).attr("x2", w)
+  .attr("y1", 0).attr("y2", 0)
+  .attr("stroke", "transparent")
+  .attr("stroke-width", 25);
+
+dragGroup.append("line")
+  .attr("x1", 0).attr("x2", w)
+  .attr("y1", 0).attr("y2", 0)
+  .attr("stroke", "#1e2a38")
+  .attr("stroke-width", 2)
+  .attr("stroke-dasharray", "4,4");
+
+// Add initial label indicating this is the historical mean
+dragGroup.append("text")
+  .attr("id", "threshold-label")
+  .attr("x", w + 6)
+  .attr("y", 4)
+  .attr("fill", "#1e2a38")
+  .attr("font-size", "11px")
+  .attr("font-weight", "600")
+  .text(thresholdVal.toFixed(2) + " mm (Mean)");
+
+updateBarColors(thresholdVal);
 
 // Axes
 g.append('g').attr('transform', `translate(0,${h})`)
@@ -231,7 +346,7 @@ g.append('g')
   .call(ax => ax.selectAll('.tick line').remove())
   .call(ax => ax.selectAll('text').attr('fill', '#5a6e82').attr('font-size', 11));
 
-g.append('text').attr('transform', 'rotate(-90)').attr('x', -h / 2).attr('y', -50)
+g.append('text').attr('transform', 'rotate(-90)').attr('x', -h / 2).attr('y', -45)
   .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#5a6e82')
   .text('Global mean precipitation (mm/day)');
 
