@@ -129,6 +129,32 @@
     }
     svg text { font-family: 'Source Sans 3', sans-serif; }
 
+    /* VIZ 2 — interactive map */
+    .viz-section--wide { max-width: 1040px; }
+    .map-stage { position: relative; width: 100%; }
+    .map-stage canvas, .map-stage svg { position: absolute; top: 0; left: 0; }
+    .map-stage svg { width: 100%; height: 100%; }
+    .map-controls { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
+    .map-controls button {
+      font-family: 'Source Sans 3', sans-serif; font-size: 0.85rem; font-weight: 600;
+      padding: 6px 16px; border: 1px solid var(--line); background: #fff;
+      color: var(--text); border-radius: 6px; cursor: pointer; transition: background 0.15s;
+    }
+    .map-controls button:hover { background: #dfe6ee; }
+    .map-controls input[type=range] { flex: 1; accent-color: var(--teal); cursor: pointer; }
+    .map-year { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 1rem;
+      min-width: 52px; text-align: right; color: var(--text); }
+    .map-legend { display: flex; align-items: flex-end; gap: 0.7rem; margin-top: 1rem; }
+    .map-legend .bar { height: 12px; width: 280px; border-radius: 2px; border: 1px solid var(--line); }
+    .map-legend .ticks { display: flex; justify-content: space-between; width: 280px;
+      font-size: 0.66rem; color: var(--muted); margin-top: 3px; }
+    .map-legend .cap { font-size: 0.72rem; color: var(--muted); }
+    .map-detail { margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
+    .map-detail .hint { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.8rem; }
+    .map-detail .d-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.1rem; }
+    .map-detail .d-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.6rem; }
+    #region-paths path { cursor: pointer; }
+
     footer {
       text-align: center;
       padding: 2.5rem;
@@ -279,14 +305,6 @@
     <div class="viz-card-sub">CESM2 · r1i1p1f1 · Historical run · Global spatial mean (mm/day)</div>
     <svg id="bar-svg" width="100%" viewBox="0 0 780 280" style="display:block;"></svg>
   </div>
-
-  <div class="writeup" style="margin-top:2.5rem;">
-    <p class="viz-label">What have you done so far?</p>
-    <p>We have created a GitHub repo and set up the web page that will host the interactive visualization with an <code style="font-family:monospace;font-size:0.9em;background:var(--line);padding:1px 5px;border-radius:3px;">index.html</code> file. We built a cover page with animated rain effects that fits the topic of the project. We implemented the first D3 interactive visualization that shows the seasonal precipitation cycle from historical data. We have also brainstormed the other visualizations to include in the project.</p>
-
-    <p class="viz-label" style="margin-top:2rem;">What will be the most challenging part of your project to design and why?</p>
-    <p>The most challenging part of the project to design would be building the map to show changing global and regional precipitation levels. One of the challenges is how to transform the CMIP6 data files into something that D3 can process so we can apply the interactions on the map. Another challenge would be how to encode the precipitation level changes on the map so it is not messy yet still representative globally. We also want to design a hover interaction that lets users select specific regions and see the changes in that region, which could be quite tricky to implement.</p>
-  </div>
 </section>
 
 <section class="rainfall-section" id="globe-viz">
@@ -313,6 +331,40 @@
   <div class="globe-container">
     <div class="globe-glow"></div>
     <svg id="globe-svg" width="600" height="600"></svg>
+  </div>
+</section>
+
+<section class="viz-section viz-section--wide" id="viz2">
+  <p class="viz-label">Visualization 2</p>
+  <h2>Where the rain shifts</h2>
+  <p>Now we project forward. This map shows how decadal-mean precipitation departs from the 1980–2010 baseline, as a percentage — <strong style="color:var(--text)">brown for drier, teal for wetter</strong>. Drag the timeline from 1850 to 2100 to watch the subtropical dry zones expand while the high latitudes and tropics moisten. Hover any IPCC AR6 region to highlight it, or click to lock its full trajectory in the chart below.</p>
+  <div class="viz-card">
+    <div class="viz-card-title">Decadal Precipitation Change vs. 1980–2010 Baseline</div>
+    <div class="viz-card-sub">CESM2 · historical + SSP585 (high emissions) · % change in mean precipitation</div>
+
+    <div class="map-stage" id="map-stage">
+      <canvas id="map-grid"></canvas>
+      <svg id="map-overlay"></svg>
+    </div>
+    <div class="map-controls">
+      <button id="map-play">▶ Play</button>
+      <input type="range" id="map-slider" min="0" value="0">
+      <span class="map-year" id="map-year"></span>
+    </div>
+    <div class="map-legend">
+      <div>
+        <div class="bar" id="map-legend-bar"></div>
+        <div class="ticks" id="map-legend-ticks"></div>
+      </div>
+      <span class="cap">Δ% precip</span>
+    </div>
+
+    <div class="map-detail">
+      <p class="hint">Hover an IPCC AR6 region to highlight it · click to lock its trajectory below.</p>
+      <p class="d-title" id="map-detail-title">—</p>
+      <p class="d-sub" id="map-detail-sub">Select a region on the map.</p>
+      <svg id="map-line" width="100%" viewBox="0 0 900 220" style="display:block;"></svg>
+    </div>
   </div>
 </section>
 
@@ -558,6 +610,207 @@ window.flyToGlobe = function(lon, lat, id) {
       setTimeout(() => { isInteracting = false; }, 2500);
     });
 }
+
+// ============================================================================
+// VISUALIZATION 2 — interactive precipitation-change map (scoped IIFE)
+// ============================================================================
+// Leading semicolon guards against ASI: the preceding globe code defines
+// `window.flyToGlobe = function(){...}` with no trailing semicolon, so without
+// this `;` the parser would treat `(function(){...})()` as a call on it.
+;(function () {
+  const VMAX = 30;                 // color scale saturates at ±30 %
+  const BASELINE_MIN = 0.2;        // mm/day — mask cells with tiny baselines
+  const TEAL = '#2b7fbf';
+  const color = v => d3.interpolateBrBG((Math.max(-VMAX, Math.min(VMAX, v)) + VMAX) / (2 * VMAX));
+
+  const stage = document.getElementById('map-stage');
+  const MW = Math.min(900, Math.round(stage.getBoundingClientRect().width));
+  const MH = Math.round(MW * 0.52);
+  stage.style.height = MH + 'px';
+
+  const projection = d3.geoNaturalEarth1().fitExtent([[2, 2], [MW - 2, MH - 2]], { type: 'Sphere' });
+  const path = d3.geoPath(projection);
+
+  let MAP, REGIONS, AR6, frameIdx = 0, playing = false, timer = null;
+  let selectedRegion = null, hoverRegion = null;
+  let ctx, svgM, regionSel;
+
+  Promise.all([
+    d3.json('map_anomaly.json'),
+    d3.json('region_series_ar6.json'),
+    d3.json('ar6_regions.geojson'),
+    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json'),
+  ]).then(([map, regions, ar6, world]) => {
+    MAP = map; REGIONS = regions; AR6 = ar6;
+    const land = topojson.feature(world, world.objects.land);
+    frameIdx = d3.minIndex(MAP.times, t => Math.abs(t - 2020));   // open on ~2020
+
+    setupCanvas();
+    setupOverlay(land);
+    setupRegions();
+    setupLegend();
+    setupSlider();
+    selectRegion('NCA');           // default: region containing San Diego
+    render();
+  });
+
+  // ---- canvas heatmap ----
+  function setupCanvas() {
+    const canvas = document.getElementById('map-grid');
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = MW * dpr; canvas.height = MH * dpr;
+    canvas.style.width = MW + 'px'; canvas.style.height = MH + 'px';
+    ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+  }
+  function drawGrid() {
+    const { lat, lon, baseline } = MAP;
+    const frame = MAP.anomaly[frameIdx];
+    const dLat = (lat[1] - lat[0]) / 2, dLon = (lon[1] - lon[0]) / 2;
+    ctx.clearRect(0, 0, MW, MH);
+    for (let i = 0; i < lat.length; i++) {
+      const la = lat[i];
+      for (let j = 0; j < lon.length; j++) {
+        const anom = frame[i][j], base = baseline[i][j];
+        if (anom == null || base == null || base < BASELINE_MIN) continue;
+        const pct = anom / base * 100, lo = lon[j];
+        const a = projection([lo - dLon, la - dLat]);
+        const b = projection([lo + dLon, la - dLat]);
+        const c = projection([lo + dLon, la + dLat]);
+        const d = projection([lo - dLon, la + dLat]);
+        if (!a || !b || !c || !d) continue;
+        if (Math.abs(b[0] - a[0]) > MW / 2) continue;   // antimeridian wrap guard
+        ctx.beginPath();
+        ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
+        ctx.lineTo(c[0], c[1]); ctx.lineTo(d[0], d[1]);
+        ctx.closePath();
+        ctx.fillStyle = color(pct); ctx.fill();
+      }
+    }
+  }
+
+  // ---- svg overlay: graticule, sphere, coastlines ----
+  function setupOverlay(land) {
+    svgM = d3.select('#map-overlay').attr('width', MW).attr('height', MH)
+            .attr('viewBox', `0 0 ${MW} ${MH}`);
+    svgM.append('path').datum(d3.geoGraticule10()).attr('d', path)
+        .attr('fill', 'none').attr('stroke', 'rgba(30,42,56,0.10)').attr('stroke-width', 0.5);
+    svgM.append('path').datum({ type: 'Sphere' }).attr('d', path)
+        .attr('fill', 'none').attr('stroke', 'rgba(30,42,56,0.5)').attr('stroke-width', 1);
+    svgM.append('path').datum(land).attr('d', path)
+        .attr('fill', 'none').attr('stroke', 'rgba(30,42,56,0.75)').attr('stroke-width', 0.7);
+  }
+
+  // ---- AR6 regions ----
+  function setupRegions() {
+    const feats = AR6.features.filter(f => REGIONS.regions[f.properties.abbrev]);
+    regionSel = svgM.append('g').attr('id', 'region-paths')
+      .selectAll('path').data(feats).join('path')
+        .attr('d', path).attr('fill', 'transparent')
+        .attr('stroke', 'rgba(30,42,56,0.16)').attr('stroke-width', 0.5)
+        .attr('pointer-events', 'all')
+        .on('mouseenter', (e, f) => { hoverRegion = f.properties.abbrev; styleRegions(); })
+        .on('mouseleave', () => { hoverRegion = null; styleRegions(); })
+        .on('click', (e, f) => selectRegion(f.properties.abbrev));
+  }
+  function styleRegions() {
+    if (!regionSel) return;
+    regionSel
+      .attr('fill', f => f.properties.abbrev === hoverRegion ? 'rgba(43,127,191,0.12)' : 'transparent')
+      .attr('stroke', f => f.properties.abbrev === selectedRegion ? TEAL
+                         : f.properties.abbrev === hoverRegion ? 'rgba(43,127,191,0.7)'
+                         : 'rgba(30,42,56,0.16)')
+      .attr('stroke-width', f => f.properties.abbrev === selectedRegion ? 2
+                              : f.properties.abbrev === hoverRegion ? 1.3 : 0.5)
+      .filter(f => f.properties.abbrev === selectedRegion).raise();
+  }
+  function selectRegion(abbr) {
+    if (!REGIONS.regions[abbr]) return;
+    selectedRegion = abbr; styleRegions(); drawLine();
+  }
+
+  // ---- legend ----
+  function setupLegend() {
+    const stops = d3.range(0, 1.01, 0.05)
+      .map(t => `${d3.interpolateBrBG(t)} ${Math.round(t * 100)}%`).join(', ');
+    document.getElementById('map-legend-bar').style.background = `linear-gradient(to right, ${stops})`;
+    document.getElementById('map-legend-ticks').innerHTML =
+      d3.range(-VMAX, VMAX + 1, 10).map(v => `<span>${v > 0 ? '+' : ''}${v}%</span>`).join('');
+  }
+
+  // ---- slider + play ----
+  function setupSlider() {
+    const slider = document.getElementById('map-slider');
+    slider.max = MAP.times.length - 1; slider.value = frameIdx;
+    slider.addEventListener('input', () => { frameIdx = +slider.value; render(); });
+    document.getElementById('map-play').addEventListener('click', togglePlay);
+  }
+  function togglePlay() {
+    playing = !playing;
+    document.getElementById('map-play').textContent = playing ? '❚❚ Pause' : '▶ Play';
+    if (playing) {
+      timer = setInterval(() => {
+        frameIdx = (frameIdx + 1) % MAP.times.length;
+        document.getElementById('map-slider').value = frameIdx;
+        render();
+      }, 600);
+    } else { clearInterval(timer); }
+  }
+
+  // ---- detail line chart (fixed 900x220 viewBox, scales responsively) ----
+  const lc = { w: 900, h: 220, m: { t: 16, r: 18, b: 30, l: 46 } };
+  let lcX, lcY, lcSvg, lcMarker, lcDot;
+  function drawLine() {
+    const series = REGIONS.regions[selectedRegion], times = REGIONS.times;
+    const data = times.map((y, i) => ({ year: y, val: series[i] })).filter(d => d.val != null);
+    const iw = lc.w - lc.m.l - lc.m.r, ih = lc.h - lc.m.t - lc.m.b;
+
+    d3.select('#map-line').selectAll('*').remove();
+    lcSvg = d3.select('#map-line').append('g').attr('transform', `translate(${lc.m.l},${lc.m.t})`);
+
+    lcX = d3.scaleLinear().domain(d3.extent(times)).range([0, iw]);
+    const ext = d3.extent(data, d => d.val), pad = Math.max(2, (ext[1] - ext[0]) * 0.15);
+    lcY = d3.scaleLinear().domain([Math.min(0, ext[0]) - pad, Math.max(0, ext[1]) + pad])
+            .range([ih, 0]).nice();
+
+    lcSvg.append('g').attr('transform', `translate(0,${ih})`)
+         .call(d3.axisBottom(lcX).tickFormat(d3.format('d')))
+         .call(ax => ax.selectAll('text').attr('fill', '#5a6e82'));
+    lcSvg.append('g').call(d3.axisLeft(lcY).ticks(5).tickFormat(d => d + '%'))
+         .call(ax => ax.selectAll('text').attr('fill', '#5a6e82'));
+    lcSvg.append('line').attr('x1', 0).attr('x2', iw).attr('y1', lcY(0)).attr('y2', lcY(0))
+         .attr('stroke', '#9fb0c2').attr('stroke-dasharray', '3,3');
+    lcSvg.append('path').datum(data).attr('fill', 'none')
+         .attr('stroke', TEAL).attr('stroke-width', 2)
+         .attr('d', d3.line().x(d => lcX(d.year)).y(d => lcY(d.val)));
+    lcMarker = lcSvg.append('line').attr('y1', 0).attr('y2', ih)
+         .attr('stroke', '#1e2a38').attr('stroke-width', 1);
+    lcDot = lcSvg.append('circle').attr('r', 4).attr('fill', TEAL)
+         .attr('stroke', '#fff').attr('stroke-width', 1.5);
+
+    document.getElementById('map-detail-title').textContent =
+      `${selectedRegion} · ${REGIONS.names[selectedRegion]}`;
+    updateMarker();
+  }
+  function updateMarker() {
+    if (!lcSvg) return;
+    const year = MAP.times[frameIdx], idx = REGIONS.times.indexOf(year);
+    const val = idx >= 0 ? REGIONS.regions[selectedRegion][idx] : null;
+    lcMarker.attr('x1', lcX(year)).attr('x2', lcX(year));
+    if (val != null) lcDot.attr('cx', lcX(year)).attr('cy', lcY(val)).style('display', null);
+    else lcDot.style('display', 'none');
+    document.getElementById('map-detail-sub').textContent =
+      `${year}: ${val == null ? 'n/a' : (val > 0 ? '+' : '') + val.toFixed(1) + '%'} vs. 1980–2010 baseline`;
+  }
+
+  // ---- master render ----
+  function render() {
+    drawGrid();
+    document.getElementById('map-year').textContent = MAP.times[frameIdx];
+    updateMarker();
+  }
+})();
+
 </script>
 </body>
 </html>
