@@ -40,7 +40,39 @@
       position: relative;
       overflow: hidden;
     }
-    .hero-rain { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    
+    /* Hero Background Images (Rainforest to Desert Fade) */
+    .hero-bg-container {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      display: flex;
+      opacity: 0.25; /* Keeps it subtle so text remains readable */
+    }
+    .hero-bg-left {
+      flex: 1;
+      background: url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=1200&q=80') center/cover no-repeat;
+      -webkit-mask-image: linear-gradient(to right, black 50%, transparent 100%);
+      mask-image: linear-gradient(to right, black 50%, transparent 100%);
+    }
+    .hero-bg-right {
+      flex: 1;
+      background: url('https://images.unsplash.com/photo-1473445730015-841f29a949ce?w=1200&q=80') center/cover no-repeat;
+      -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
+      mask-image: linear-gradient(to left, black 50%, transparent 100%);
+    }
+    /* Smooth blend into the actual background color at the top and bottom */
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, var(--bg) 0%, transparent 20%, transparent 80%, var(--bg) 100%);
+      z-index: 1;
+    }
+
+    /* Ensure hero content stays above the backgrounds */
+    .hero > * { position: relative; z-index: 3; }
+    .hero .hero-rain { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
+    
     .raindrop {
       position: absolute;
       width: 1.5px;
@@ -425,7 +457,7 @@
     .map-stage { 
       position: relative; 
       width: 100%; 
-      aspect-ratio: 900 / 468; /* Locks the scale ratio */
+      aspect-ratio: 900 / 468; 
       overflow: hidden;
     }
     .map-stage canvas, .map-stage svg { 
@@ -475,6 +507,12 @@
 <body>
 
 <section class="hero">
+  <div class="hero-bg-container">
+    <div class="hero-bg-left"></div>
+    <div class="hero-bg-right"></div>
+  </div>
+  <div class="hero-overlay"></div>
+
   <div class="hero-rain" id="rain-canvas"></div>
   <p class="hero-eyebrow">DSC 106 · Spring 2026 · UC San Diego</p>
   <h1>Where the <em>Rain Falls</em></h1>
@@ -492,7 +530,7 @@
 <section class="section-light" id="viz">
   <div class="section-inner">
     <span class="viz-label">The Baseline · Visualization 1</span>
-    <h2 class="section-heading">The rhythm we built civilization on</h2>
+    <h2 class="section-heading">The Rhythm We Built Civilization On</h2>
     <p class="section-lead" style="margin-top:0.8rem;">
       Before we can understand what is changing, we need to see what was stable.
       For centuries, global precipitation followed a reliable seasonal cycle —
@@ -546,7 +584,7 @@
 <section class="globe-section" id="globe-viz">
   <div class="section-inner">
     <span class="viz-label">Regional Extremes · Visualization 2</span>
-    <h2 class="section-heading">A tale of extremes</h2>
+    <h2 class="section-heading">A Tale Of Extremes</h2>
     <p class="section-lead" style="margin-top:0.6rem;">
       Global averages hide violent local contrasts. The Amazon rainforest receives
       more than 2,000 mm/year. The Sahara averages less than 25 mm. These extremes
@@ -683,7 +721,7 @@
 <section class="section-light" id="viz2">
   <div class="section-inner viz-section--wide">
     <span class="viz-label">Global Shift · Visualization 3</span>
-    <h2 class="section-heading" style="margin-bottom:0.6rem;">Where the rain is moving</h2>
+    <h2 class="section-heading" style="margin-bottom:0.6rem;">Where the Rain Is Moving</h2>
     <p class="section-lead">
       Now we project forward. This map shows how decadal-mean precipitation departs from the
       1980–2010 baseline, as a percentage — <strong style="color:var(--text);">brown for drier, teal for wetter</strong>.
@@ -922,7 +960,7 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     },
     {
       id: "Mawsynram", title: "Meghalaya, India", coords: [91.5, 25.3], color: "#fc8181",
-      img: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=320&q=80&fit=crop",
+      img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Nohkalikai_Falls_Cherrapunji.jpg/320px-Nohkalikai_Falls_Cherrapunji.jpg",
       spark: [32.0,32.2,32.4,32.6,32.8,33.1,33.4,33.7,34.0,34.4,34.8,35.2,35.7,36.1,36.6,37.0,37.5,38.0,38.5,39.0],
       sparkLabel: "Mean precip (mm/day) · Mawsynram · 1960–2090",
       sparkColor: "#fc8181"
@@ -1139,8 +1177,6 @@ g.append('text').attr('x',w/2).attr('y',h+42)
   const TEAL = '#2b7fbf';
   const color = v => d3.interpolateBrBG((Math.max(-VMAX, Math.min(VMAX, v)) + VMAX) / (2*VMAX));
 
-  // The fixed base dimensions ensure the canvas internal resolution perfectly matches the SVG coordinate space.
-  // CSS `width: 100%` and `aspect-ratio` handle the actual fluid scaling down for smaller screens.
   const MW = 900;
   const MH = 468;
 
@@ -1158,7 +1194,7 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json'),
   ]).then(([map, regions, ar6, world]) => {
     MAP=map; REGIONS=regions; AR6=ar6;
-    if (!MAP || !REGIONS || !AR6) return; // Prevent breaking if files aren't found locally yet
+    if (!MAP || !REGIONS || !AR6) return; 
     const land = topojson.feature(world, world.objects.land);
     frameIdx = d3.minIndex(MAP.times, t => Math.abs(t-2020));
 
@@ -1171,9 +1207,7 @@ g.append('text').attr('x',w/2).attr('y',h+42)
   function setupCanvas() {
     const canvas = document.getElementById('map-grid');
     const dpr = window.devicePixelRatio||1;
-    // Set internal canvas resolution based on our hard-coded 900x468 layout
     canvas.width=MW*dpr; canvas.height=MH*dpr;
-    // (Note: No inline CSS width/height here; it is fully handled by CSS rule: width: 100%)
     ctx = canvas.getContext('2d'); ctx.scale(dpr,dpr);
   }
 
@@ -1181,11 +1215,8 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     const {lat, lon, baseline} = MAP;
     const frame = MAP.anomaly[frameIdx];
 
-    // THE FIX: Shift the polygon paths right slightly to align perfectly with SVG boundaries
-    // Tweak this number slightly if it needs fine tuning! 
     const xOffset = -1; 
 
-    // Small epsilon to expand cells slightly so they touch and form a solid block look
     const eps = 0.05;
     const dLat = Math.abs(lat[1] - lat[0]) / 2;
     const dLon = Math.abs(lon[1] - lon[0]) / 2;
@@ -1201,7 +1232,6 @@ g.append('text').attr('x',w/2).attr('y',h+42)
         let lo = lon[j];
         if (lo > 180) lo -= 360;
 
-        // Calculate the four corners of this specific grid cell
         const corners = [
             [lo - dLon - eps, la - dLat - eps],
             [lo + dLon + eps, la - dLat - eps],
@@ -1212,7 +1242,6 @@ g.append('text').attr('x',w/2).attr('y',h+42)
         const projected = corners.map(c => projection(c));
         if (projected.some(p => p === null)) continue;
 
-        // Draw the polygon and apply the xOffset pixel alignment to the corners
         ctx.beginPath();
         ctx.moveTo(projected[0][0] + xOffset, projected[0][1]);
         for (let k = 1; k < 4; k++) {
