@@ -167,12 +167,9 @@
       color: #8a9eb5;
       margin-bottom: 1rem;
     }
-
-    /* override default svg text color inside dark card */
     #bar-svg text { fill: #8a9eb5 !important; }
     #threshold-label { fill: #eef1f5 !important; }
 
-    /* drag hint badge */
     .drag-badge {
       position: absolute;
       top: 0.9rem;
@@ -187,7 +184,6 @@
       pointer-events: none;
     }
 
-    /* 3-column annotations under the chart */
     .bar-annotations-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -237,7 +233,6 @@
       gap: 3.5rem;
       margin-top: 2.5rem;
     }
-    /* cards column */
     .globe-cards-col {
       flex: 0 0 380px;
       min-width: 0;
@@ -279,7 +274,6 @@
       margin: 0;
     }
 
-    /* zoomed-in data panel — hidden by default */
     .region-panel {
       display: none;
       background: rgba(11, 20, 33, 0.9);
@@ -336,7 +330,6 @@
     }
     .back-btn:hover { background: rgba(43,127,191,0.12); }
 
-    /* globe container */
     .globe-wrap {
       flex: 1 1 auto;
       display: flex;
@@ -368,7 +361,6 @@
       height: 100%;
     }
 
-    /* zoom-in overlay ring */
     .globe-zoomed-ring {
       position: absolute;
       inset: 0;
@@ -380,7 +372,6 @@
     }
     .globe-container.zoomed .globe-zoomed-ring { opacity: 1; }
 
-    /* Radar rings */
     @keyframes radar-pulse {
       0%   { r: 8px;  opacity: 0.9; stroke-width: 2px; }
       100% { r: 50px; opacity: 0;   stroke-width: 0.5px; }
@@ -389,7 +380,6 @@
     .radar-delay-1     { animation-delay: 0.8s; }
     .radar-delay-2     { animation-delay: 1.6s; }
 
-    /* tooltip */
     #globe-tooltip {
       position: fixed;
       background: #1e2a38;
@@ -412,7 +402,6 @@
       border-radius: 4px; margin-bottom: 5px; display: block;
     }
 
-    /* globe hint strip */
     .globe-hint-strip {
       display: flex;
       gap: 1rem;
@@ -432,9 +421,20 @@
     .viz-card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; }
     .viz-card-sub   { font-size: 0.75rem; color: var(--muted); margin-bottom: 1.5rem; }
 
-    .map-stage { position: relative; width: 100%; }
-    .map-stage canvas, .map-stage svg { position: absolute; top: 0; left: 0; }
-    .map-stage svg { width: 100%; height: 100%; }
+    /* Fix: CSS resizing lock for Canvas and SVG */
+    .map-stage { 
+      position: relative; 
+      width: 100%; 
+      aspect-ratio: 900 / 468; /* Locks the scale ratio */
+      overflow: hidden;
+    }
+    .map-stage canvas, .map-stage svg { 
+      position: absolute; 
+      top: 0; left: 0; 
+      width: 100% !important; 
+      height: 100% !important; 
+    }
+    
     .map-controls { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
     .map-controls button {
       font-family: 'Source Sans 3', sans-serif; font-size: 0.85rem; font-weight: 600;
@@ -528,7 +528,7 @@
       </div>
       <div class="bar-annotation">
         <p>
-          <span class="ann-stat">~2.43 mm/day</span>
+          <span class="ann-stat">~2.42 mm/day</span>
           <strong>The global mean</strong> — the dashed threshold line. Drag it up or down to see which months fall above or below any precipitation level you choose.
         </p>
       </div>
@@ -783,7 +783,6 @@ const barTooltip = d3.select("body").append("div")
 const xScale = d3.scaleBand().domain(months).range([0, w]).padding(0.28);
 const yScale = d3.scaleLinear().domain([2.2, 2.65]).range([h, 0]);
 
-// subtle grid lines
 yScale.ticks(4).forEach(t => {
   g.append('line').attr('x1',0).attr('x2',w).attr('y1',yScale(t)).attr('y2',yScale(t))
    .attr('stroke','rgba(255,255,255,0.06)').attr('stroke-width',1);
@@ -809,7 +808,6 @@ const bars = g.selectAll('.precip-bar').data(dataset).enter().append('rect')
     barTooltip.transition().duration(200).style("opacity",0);
   });
 
-// bar value labels
 const barLabels = g.selectAll('.bar-label').data(dataset).enter().append('text')
   .attr('class','bar-label')
   .attr('x', d => xScale(d.month) + xScale.bandwidth()/2)
@@ -818,7 +816,6 @@ const barLabels = g.selectAll('.bar-label').data(dataset).enter().append('text')
   .attr('font-size',9.5)
   .text(d => d.val.toFixed(2));
 
-// annotation arrow for peak — Jun
 const peakD = dataset.find(d => d.month === 'Jun');
 const annotX = xScale('Jun') + xScale.bandwidth()/2;
 const annotY = yScale(peakD.val) - 22;
@@ -831,7 +828,6 @@ function updateBarColors(threshold) {
   barLabels.attr('fill', d => d.val >= threshold ? '#8ac8ef' : '#5a6e82');
 }
 
-// draggable threshold
 const dragBehavior = d3.drag().on("drag", function(event) {
   let newY = Math.max(0, Math.min(h, event.y));
   const meanY = yScale(historicalMean);
@@ -848,18 +844,14 @@ const dragGroup = g.append("g")
   .style("cursor","ns-resize")
   .call(dragBehavior);
 
-// invisible wide hit area
 dragGroup.append("line").attr("x1",0).attr("x2",w).attr("stroke","transparent").attr("stroke-width",24);
-// visible dashed line
 dragGroup.append("line").attr("x1",0).attr("x2",w)
   .attr("stroke","rgba(255,255,255,0.45)").attr("stroke-width",1.5)
   .attr("stroke-dasharray","5,4");
-// grip circles
 [-8, 0, 8].forEach(offX => {
   dragGroup.append("circle").attr("cx", w/2 + offX).attr("cy",0).attr("r",2.5)
     .attr("fill","rgba(255,255,255,0.55)");
 });
-// label
 dragGroup.append("text").attr("id","threshold-label")
   .attr("x", w + 6).attr("y", 4)
   .attr("font-size","10.5px").attr("font-weight","600")
@@ -867,7 +859,6 @@ dragGroup.append("text").attr("id","threshold-label")
 
 updateBarColors(thresholdVal);
 
-// axes
 g.append('g').attr('transform',`translate(0,${h})`)
   .call(d3.axisBottom(xScale).tickSize(0))
   .call(ax => ax.select('.domain').attr('stroke','rgba(255,255,255,0.15)'))
@@ -1148,10 +1139,10 @@ g.append('text').attr('x',w/2).attr('y',h+42)
   const TEAL = '#2b7fbf';
   const color = v => d3.interpolateBrBG((Math.max(-VMAX, Math.min(VMAX, v)) + VMAX) / (2*VMAX));
 
-  const stage = document.getElementById('map-stage');
-  const MW = Math.min(900, Math.round(stage.getBoundingClientRect().width));
-  const MH = Math.round(MW * 0.52);
-  stage.style.height = MH + 'px';
+  // The fixed base dimensions ensure the canvas internal resolution perfectly matches the SVG coordinate space.
+  // CSS `width: 100%` and `aspect-ratio` handle the actual fluid scaling down for smaller screens.
+  const MW = 900;
+  const MH = 468;
 
   const projection = d3.geoNaturalEarth1().fitExtent([[2,2],[MW-2,MH-2]],{type:'Sphere'});
   const path = d3.geoPath(projection);
@@ -1180,33 +1171,61 @@ g.append('text').attr('x',w/2).attr('y',h+42)
   function setupCanvas() {
     const canvas = document.getElementById('map-grid');
     const dpr = window.devicePixelRatio||1;
+    // Set internal canvas resolution based on our hard-coded 900x468 layout
     canvas.width=MW*dpr; canvas.height=MH*dpr;
-    canvas.style.width=MW+'px'; canvas.style.height=MH+'px';
+    // (Note: No inline CSS width/height here; it is fully handled by CSS rule: width: 100%)
     ctx = canvas.getContext('2d'); ctx.scale(dpr,dpr);
   }
+
   function drawGrid() {
-    const {lat,lon,baseline} = MAP;
+    const {lat, lon, baseline} = MAP;
     const frame = MAP.anomaly[frameIdx];
-    const dLat=(lat[1]-lat[0])/2, dLon=(lon[1]-lon[0])/2;
-    ctx.clearRect(0,0,MW,MH);
-    for (let i=0;i<lat.length;i++) {
-      const la=lat[i];
-      for (let j=0;j<lon.length;j++) {
-        const anom=frame[i][j], base=baseline[i][j];
-        if (anom==null||base==null||base<BASELINE_MIN) continue;
-        const pct=anom/base*100, lo=lon[j];
-        const a=projection([lo-dLon,la-dLat]), b=projection([lo+dLon,la-dLat]);
-        const c=projection([lo+dLon,la+dLat]), d=projection([lo-dLon,la+dLat]);
-        if (!a||!b||!c||!d) continue;
-        if (Math.abs(b[0]-a[0])>MW/2) continue;
+
+    // THE FIX: Shift the polygon paths right slightly to align perfectly with SVG boundaries
+    // Tweak this number slightly if it needs fine tuning! 
+    const xOffset = -1; 
+
+    // Small epsilon to expand cells slightly so they touch and form a solid block look
+    const eps = 0.05;
+    const dLat = Math.abs(lat[1] - lat[0]) / 2;
+    const dLon = Math.abs(lon[1] - lon[0]) / 2;
+
+    ctx.clearRect(0, 0, MW, MH);
+
+    for (let i = 0; i < lat.length; i++) {
+      const la = lat[i];
+      for (let j = 0; j < lon.length; j++) {
+        const anom = frame[i][j], base = baseline[i][j];
+        if (anom == null || base == null || base < BASELINE_MIN) continue;
+        
+        let lo = lon[j];
+        if (lo > 180) lo -= 360;
+
+        // Calculate the four corners of this specific grid cell
+        const corners = [
+            [lo - dLon - eps, la - dLat - eps],
+            [lo + dLon + eps, la - dLat - eps],
+            [lo + dLon + eps, la + dLat + eps],
+            [lo - dLon - eps, la + dLat + eps]
+        ];
+
+        const projected = corners.map(c => projection(c));
+        if (projected.some(p => p === null)) continue;
+
+        // Draw the polygon and apply the xOffset pixel alignment to the corners
         ctx.beginPath();
-        ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]);
-        ctx.lineTo(c[0],c[1]); ctx.lineTo(d[0],d[1]);
+        ctx.moveTo(projected[0][0] + xOffset, projected[0][1]);
+        for (let k = 1; k < 4; k++) {
+            ctx.lineTo(projected[k][0] + xOffset, projected[k][1]);
+        }
         ctx.closePath();
-        ctx.fillStyle=color(pct); ctx.fill();
+        
+        ctx.fillStyle = color(anom / base * 100);
+        ctx.fill();
       }
     }
   }
+
   function setupOverlay(land) {
     svgM = d3.select('#map-overlay').attr('width',MW).attr('height',MH).attr('viewBox',`0 0 ${MW} ${MH}`);
     svgM.append('path').datum(d3.geoGraticule10()).attr('d',path)
