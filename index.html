@@ -259,6 +259,39 @@
     .globe-section .section-heading { color: #fff; }
     .globe-section .section-lead { color: #8a9eb5; max-width: 800px; }
 
+    /* find-your-region search (Viz 3 payoff) */
+    .region-search { margin: 0 0 1.4rem; }
+    .region-search-label {
+      display:block; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase;
+      color:#63b3ed; margin-bottom:0.5rem;
+    }
+    .region-search-box { position: relative; }
+    #region-search-input {
+      width:100%; box-sizing:border-box; font-family:'Source Sans 3',sans-serif; font-size:0.95rem;
+      padding:0.7rem 0.9rem; border-radius:9px; color:#eef1f5;
+      background:rgba(30,42,56,0.6); border:1px solid rgba(86,114,142,0.35); outline:none;
+      transition:border-color 0.15s, background 0.15s;
+    }
+    #region-search-input::placeholder { color:#5a6e82; }
+    #region-search-input:focus { border-color:#63b3ed; background:rgba(30,42,56,0.85); }
+    .region-search-results {
+      position:absolute; left:0; right:0; top:calc(100% + 4px); z-index:20;
+      background:#16202c; border:1px solid rgba(86,114,142,0.35); border-radius:9px;
+      max-height:260px; overflow-y:auto; display:none;
+      box-shadow:0 12px 32px rgba(0,0,0,0.45);
+    }
+    .region-search-results.open { display:block; }
+    .region-search-item {
+      padding:0.55rem 0.9rem; cursor:pointer; font-size:0.9rem;
+      display:flex; justify-content:space-between; gap:0.8rem; align-items:baseline;
+    }
+    .region-search-item:hover, .region-search-item.active { background:rgba(99,179,237,0.16); }
+    .region-search-item .rs-name { color:#eef1f5; }
+    .region-search-item .rs-sub  { color:#8a9eb5; font-size:0.72rem; white-space:nowrap; }
+    .region-search-empty { padding:0.7rem 0.9rem; color:#8a9eb5; font-size:0.85rem; }
+    .search-verdict { font-size:0.86rem; color:#cdd7e2; line-height:1.5; margin:0.7rem 0 0.2rem; }
+    .region-outline { fill:rgba(99,179,237,0.16); stroke:#63b3ed; stroke-width:1.4; pointer-events:none; }
+
     .globe-layout {
       display: flex;
       align-items: flex-start;
@@ -671,11 +704,16 @@
     <p class="section-lead" style="margin-top:0.6rem;">
       Global averages hide violent local contrasts. The Amazon rainforest receives
       more than 2,000 mm/year. The Sahara averages less than 25 mm. These extremes
-      are not static — climate projections show they will intensify. Click a region
-      to zoom in and see what the data says about its future.
+      are not static — climate projections show they will intensify. Explore the extremes —
+      then <strong style="color:#cdd7e2;">search your own city, country, or region</strong> to see
+      what the data says about its future.
     </p>
 
     <div class="globe-hint-strip">
+      <span class="hint-pill" style="background:rgba(99,179,237,0.08);border-color:rgba(99,179,237,0.2);color:#63b3ed;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Search your city, country, or region
+      </span>
       <span class="hint-pill" style="background:rgba(99,179,237,0.08);border-color:rgba(99,179,237,0.2);color:#63b3ed;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
         Click a card or pin to zoom in
@@ -692,6 +730,13 @@
 
     <div class="globe-layout">
       <div class="globe-cards-col">
+        <div class="region-search">
+          <label class="region-search-label" for="region-search-input">Find your region</label>
+          <div class="region-search-box">
+            <input type="text" id="region-search-input" placeholder="Search a city, country, or region…" autocomplete="off" spellcheck="false" />
+            <div class="region-search-results" id="region-search-results"></div>
+          </div>
+        </div>
         <div id="globe-cards-view">
           <div class="rainfall-card" id="card-Amazon" onclick="flyToGlobe(-60, -10, 'Amazon')">
             <h3>🌿 The Amazon Rainforest</h3>
@@ -781,6 +826,26 @@
           </div>
           <div class="sparkline-wrap">
             <svg id="sparkline-Mawsynram" width="100%" viewBox="0 0 300 80" style="display:block;"></svg>
+          </div>
+          <button class="back-btn" onclick="resetGlobe()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back to globe
+          </button>
+        </div>
+
+        <div class="region-panel" id="panel-search">
+          <h4 id="search-panel-title">Region · Projected Change</h4>
+          <div class="stat-row">
+            <span class="stat-label">Change by 2100 (SSP5-8.5)</span>
+            <span class="stat-val" id="search-stat-2100">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Direction</span>
+            <span class="stat-val" id="search-stat-dir">—</span>
+          </div>
+          <p class="search-verdict" id="search-verdict"></p>
+          <div class="sparkline-wrap">
+            <svg id="sparkline-search" width="100%" viewBox="0 0 300 80" style="display:block;"></svg>
           </div>
           <button class="back-btn" onclick="resetGlobe()">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -966,6 +1031,7 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     .attr("stroke-width",1);
 
   const landGroup = globeSvg.append("g");
+  const regionOutline = globeSvg.append('path').attr('class','region-outline').style('display','none');
 
   const pinData = [
     {
@@ -995,6 +1061,7 @@ g.append('text').attr('x',w/2).attr('y',h+42)
   let currentRotate = [0, 0, 0];
   let isInteracting = false;
   let isZoomed = false;
+  let currentRegionFeature = null;
 
   const globeTooltip = d3.select('#globe-tooltip');
 
@@ -1039,6 +1106,7 @@ g.append('text').attr('x',w/2).attr('y',h+42)
   function updateGlobe() {
     sphere.attr('d', path);
     landGroup.selectAll("path").attr("d", path);
+    if (currentRegionFeature) regionOutline.attr('d', path);
     if (pinGroups) {
       pinGroups
         .attr("transform", d => {
@@ -1168,6 +1236,8 @@ g.append('text').attr('x',w/2).attr('y',h+42)
 
     document.querySelectorAll('.rainfall-card').forEach(c => c.classList.remove('active'));
     hidePanel();
+    currentRegionFeature = null;
+    regionOutline.style('display','none');
 
     const targetScale = GS * 0.46;
     const startScale = projection.scale();
@@ -1191,6 +1261,211 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     projection.scale(GS*0.46).translate([GS/2,GS/2]);
     updateGlobe();
   });
+
+  // ─── Find-your-region search (AR6 regions, SSP5-8.5) ───────────────
+  const AR6_ALIASES = {
+    'san diego':'NCA','mexico city':'NCA','mexico':'NCA','guadalajara':'NCA','houston':'NCA','phoenix':'NCA','monterrey':'NCA',
+    'los angeles':'WNA','san francisco':'WNA','las vegas':'WNA','denver':'WNA','salt lake city':'WNA','california':'WNA',
+    'seattle':'NWN','portland':'NWN','vancouver':'NWN','calgary':'NWN','alaska':'NWN',
+    'chicago':'CNA','dallas':'CNA','kansas city':'CNA','minneapolis':'CNA','texas':'CNA',
+    'new york':'ENA','washington':'ENA','atlanta':'ENA','miami':'ENA','toronto':'ENA','florida':'ENA',
+    'boston':'NEN','montreal':'NEN','quebec':'NEN',
+    'guatemala':'SCA','panama':'SCA','costa rica':'SCA','nicaragua':'SCA','honduras':'SCA','el salvador':'SCA',
+    'cuba':'CAR','jamaica':'CAR','haiti':'CAR','dominican republic':'CAR','puerto rico':'CAR','caribbean':'CAR','bahamas':'CAR',
+    'bogota':'NWS','colombia':'NWS','quito':'NWS','ecuador':'NWS',
+    'lima':'SWS','peru':'SWS','santiago':'SWS','chile':'SWS',
+    'venezuela':'NSA','caracas':'NSA','guyana':'NSA',
+    'manaus':'NES','amazon':'NES','recife':'NES','fortaleza':'NES',
+    'brasilia':'SAM','bolivia':'SAM','la paz':'SAM',
+    'sao paulo':'SES','rio de janeiro':'SES','buenos aires':'SES','argentina':'SES','uruguay':'SES','paraguay':'SES','montevideo':'SES',
+    'patagonia':'SSA',
+    'london':'WCE','paris':'WCE','berlin':'WCE','amsterdam':'WCE','brussels':'WCE','germany':'WCE','france':'WCE','uk':'WCE','england':'WCE','vienna':'WCE','zurich':'WCE','switzerland':'WCE','austria':'WCE','netherlands':'WCE',
+    'madrid':'MED','barcelona':'MED','rome':'MED','milan':'MED','athens':'MED','lisbon':'MED','spain':'MED','italy':'MED','greece':'MED','portugal':'MED','turkey':'MED','istanbul':'MED','morocco':'MED','tunisia':'MED','mediterranean':'MED',
+    'stockholm':'NEU','oslo':'NEU','helsinki':'NEU','copenhagen':'NEU','norway':'NEU','sweden':'NEU','finland':'NEU','denmark':'NEU',
+    'warsaw':'EEU','kyiv':'EEU','kiev':'EEU','poland':'EEU','ukraine':'EEU','romania':'EEU','moscow':'EEU','belarus':'EEU',
+    'novosibirsk':'WSB','siberia':'WSB',
+    'yakutsk':'ESB',
+    'cairo':'SAH','algiers':'SAH','sahara':'SAH','libya':'SAH','egypt':'SAH','algeria':'SAH','sudan':'SAH','chad':'SAH','niger':'SAH','timbuktu':'SAH',
+    'lagos':'WAF','nigeria':'WAF','accra':'WAF','ghana':'WAF','senegal':'WAF','dakar':'WAF','ivory coast':'WAF','mali':'WAF',
+    'kinshasa':'CAF','congo':'CAF','cameroon':'CAF','gabon':'CAF',
+    'nairobi':'NEAF','ethiopia':'NEAF','addis ababa':'NEAF','somalia':'NEAF','eritrea':'NEAF',
+    'kenya':'SEAF','tanzania':'SEAF','dar es salaam':'SEAF','zambia':'SEAF','malawi':'SEAF',
+    'johannesburg':'ESAF','south africa':'ESAF','mozambique':'ESAF','zimbabwe':'ESAF','pretoria':'ESAF',
+    'cape town':'WSAF','namibia':'WSAF','angola':'WSAF','botswana':'WSAF',
+    'madagascar':'MDG','antananarivo':'MDG',
+    'riyadh':'ARP','dubai':'ARP','saudi arabia':'ARP','yemen':'ARP','oman':'ARP','uae':'ARP','qatar':'ARP','kuwait':'ARP','jeddah':'ARP',
+    'tehran':'WCA','iran':'WCA','baghdad':'WCA','iraq':'WCA','kabul':'WCA','afghanistan':'WCA','syria':'WCA',
+    'almaty':'ECA','kazakhstan':'ECA','uzbekistan':'ECA','mongolia':'ECA','tashkent':'ECA',
+    'delhi':'SAS','mumbai':'SAS','new delhi':'SAS','india':'SAS','pakistan':'SAS','karachi':'SAS','dhaka':'SAS','bangladesh':'SAS','nepal':'SAS','sri lanka':'SAS','kolkata':'SAS','bangalore':'SAS',
+    'lhasa':'TIB','tibet':'TIB','himalaya':'TIB',
+    'beijing':'EAS','shanghai':'EAS','china':'EAS','tokyo':'EAS','japan':'EAS','seoul':'EAS','korea':'EAS','taiwan':'EAS','hong kong':'EAS','osaka':'EAS',
+    'bangkok':'SEA','thailand':'SEA','jakarta':'SEA','indonesia':'SEA','manila':'SEA','philippines':'SEA','vietnam':'SEA','hanoi':'SEA','singapore':'SEA','malaysia':'SEA','kuala lumpur':'SEA',
+    'sydney':'EAU','melbourne':'EAU','brisbane':'EAU','canberra':'EAU',
+    'perth':'SAU','adelaide':'SAU',
+    'darwin':'NAU',
+    'alice springs':'CAU',
+    'auckland':'NZ','wellington':'NZ','new zealand':'NZ',
+    'reykjavik':'GIC','greenland':'GIC','iceland':'GIC',
+  };
+
+  let ar6Centroids = {}, ar6FeatureByAbbr = {}, ar6Names = {}, ar6Series = {}, ar6Times = [];
+  let searchIndex = [], currentResults = [], activeResultIdx = -1;
+
+  Promise.all([
+    d3.json('ar6_regions.geojson').catch(() => null),
+    d3.json('region_series_ar6.json').catch(() => null),
+  ]).then(([geo, ser]) => {
+    if (!geo || !ser) { console.warn('region search: data missing'); return; }
+    ar6Names = ser.names; ar6Series = ser.regions; ar6Times = ser.times;
+    geo.features.forEach(f => {
+      const ab = f.properties.abbrev;
+      if (!ar6Series[ab]) return;
+      ar6FeatureByAbbr[ab] = f;
+      ar6Centroids[ab] = d3.geoCentroid(f);
+    });
+    searchIndex = Object.keys(ar6Series).map(ab => {
+      const name = ar6Names[ab] || ab;
+      const aliases = Object.keys(AR6_ALIASES).filter(k => AR6_ALIASES[k] === ab);
+      return { abbr: ab, name, aliases };
+    });
+    wireSearchInput();
+  });
+
+  function cap(s){ return s.replace(/\b\w/g, c => c.toUpperCase()); }
+
+  function searchRegions(q) {
+    q = q.trim().toLowerCase();
+    if (!q) return [];
+    const out = [];
+    searchIndex.forEach(e => {
+      let score = -1, hitAlias = null;
+      for (const a of e.aliases) {
+        if (a === q) { if (score < 100){ score = 100; hitAlias = a; } }
+        else if (a.startsWith(q)) { if (score < 80){ score = 80; hitAlias = a; } }
+        else if (a.includes(q)) { if (score < 50){ score = 50; hitAlias = a; } }
+      }
+      if (e.abbr.toLowerCase() === q && score < 90) score = 90;
+      const nm = e.name.toLowerCase().replace(/[.\-&]/g, ' ');
+      if (nm.startsWith(q) && score < 70) score = 70;
+      else if (nm.includes(q) && score < 40) score = 40;
+      if (score >= 0) out.push({ e, score, hitAlias });
+    });
+    out.sort((a, b) => b.score - a.score || a.e.name.localeCompare(b.e.name));
+    return out.slice(0, 8);
+  }
+
+  function wireSearchInput() {
+    const input = document.getElementById('region-search-input');
+    const box = document.getElementById('region-search-results');
+    if (!input || !box) return;
+
+    function render(results) {
+      currentResults = results; activeResultIdx = -1;
+      if (!results.length) {
+        box.innerHTML = '<div class="region-search-empty">No matching region — try a country or major city</div>';
+        box.classList.add('open'); return;
+      }
+      box.innerHTML = results.map((r, i) => {
+        const showAlias = r.hitAlias && cap(r.hitAlias) !== r.e.name;
+        const primary = showAlias ? cap(r.hitAlias) : r.e.name;
+        const sub = showAlias ? r.e.name : r.e.abbr;
+        return `<div class="region-search-item" data-abbr="${r.e.abbr}" data-i="${i}">`
+             + `<span class="rs-name">${primary}</span><span class="rs-sub">${sub}</span></div>`;
+      }).join('');
+      box.classList.add('open');
+      box.querySelectorAll('.region-search-item').forEach(el => {
+        el.addEventListener('mousedown', ev => { ev.preventDefault(); pick(el.dataset.abbr); });
+      });
+    }
+    function hl(items){ items.forEach((el, i) => el.classList.toggle('active', i === activeResultIdx)); }
+    function pick(abbr){
+      input.value = ar6Names[abbr] || abbr;
+      box.classList.remove('open');
+      input.blur();
+      flyToRegion(abbr);
+    }
+
+    input.addEventListener('input', () => render(searchRegions(input.value)));
+    input.addEventListener('focus', () => { if (input.value) render(searchRegions(input.value)); });
+    input.addEventListener('blur', () => setTimeout(() => box.classList.remove('open'), 120));
+    input.addEventListener('keydown', e => {
+      const items = box.querySelectorAll('.region-search-item');
+      if (e.key === 'ArrowDown') { e.preventDefault(); activeResultIdx = Math.min(items.length - 1, activeResultIdx + 1); hl(items); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); activeResultIdx = Math.max(0, activeResultIdx - 1); hl(items); }
+      else if (e.key === 'Enter') {
+        if (activeResultIdx >= 0 && currentResults[activeResultIdx]) pick(currentResults[activeResultIdx].e.abbr);
+        else if (currentResults[0]) pick(currentResults[0].e.abbr);
+      } else if (e.key === 'Escape') { box.classList.remove('open'); input.blur(); }
+    });
+  }
+
+  window.flyToRegion = function(abbr) {
+    const c = ar6Centroids[abbr];
+    if (!c) return;
+    isInteracting = true; isZoomed = true;
+    container.classList.add('zoomed');
+    globeTooltip.style('opacity', 0);
+    document.querySelectorAll('.rainfall-card').forEach(x => x.classList.remove('active'));
+    currentRegionFeature = ar6FeatureByAbbr[abbr];
+    regionOutline.datum(currentRegionFeature).style('display', null);
+
+    const targetScale = GS * 0.46 * 1.75;
+    const startScale = projection.scale();
+    d3.transition().duration(900)
+      .tween('flyRegion', function() {
+        const rI = d3.interpolate(projection.rotate(), [-c[0], -c[1], 0]);
+        const sI = d3.interpolate(startScale, targetScale);
+        return function(t) {
+          currentRotate = rI(t);
+          projection.rotate(currentRotate).scale(sI(t));
+          updateGlobe();
+        };
+      })
+      .on('end', function() { fillSearchPanel(abbr); setTimeout(() => { isInteracting = false; }, 500); });
+  };
+
+  function fillSearchPanel(abbr) {
+    const name = ar6Names[abbr] || abbr;
+    const vals = ar6Series[abbr];
+    const v2100 = vals[vals.length - 1];
+    const dir = v2100 > 1 ? 'wetter' : v2100 < -1 ? 'drier' : 'little changed';
+    document.querySelectorAll('.region-panel').forEach(p => p.classList.remove('visible'));
+    document.getElementById('search-panel-title').textContent = `${name.replace(/-/g,' ')} · Projected Change`;
+    const stat = document.getElementById('search-stat-2100');
+    stat.textContent = `${v2100 > 0 ? '+' : ''}${v2100.toFixed(1)}%`;
+    stat.className = 'stat-val ' + (v2100 > 1 ? 'positive' : v2100 < -1 ? 'negative' : '');
+    document.getElementById('search-stat-dir').textContent = cap(dir);
+    document.getElementById('search-verdict').textContent = (dir === 'little changed')
+      ? `By 2100, ${name.replace(/-/g,' ')} sees little net change in mean precipitation vs. the 1980–2010 baseline under SSP5-8.5 (high emissions) — though seasonal timing may still shift.`
+      : `By 2100, ${name.replace(/-/g,' ')} is projected ~${Math.abs(Math.round(v2100))}% ${dir} than the 1980–2010 baseline under SSP5-8.5 (high emissions).`;
+    drawSearchSpark(abbr);
+    document.getElementById('panel-search').classList.add('visible');
+  }
+
+  function drawSearchSpark(abbr) {
+    const svgEl = d3.select('#sparkline-search'); svgEl.selectAll('*').remove();
+    const startI = Math.max(0, ar6Times.findIndex(t => t >= 1980));
+    const years = ar6Times.slice(startI), vals = ar6Series[abbr].slice(startI);
+    const sw = 300, sh = 80, sm = { t:12, r:10, b:18, l:30 };
+    const si = sw - sm.l - sm.r, sih = sh - sm.t - sm.b;
+    const g = svgEl.append('g').attr('transform', `translate(${sm.l},${sm.t})`);
+    const x = d3.scaleLinear().domain([years[0], years[years.length-1]]).range([0, si]);
+    const ext = d3.extent(vals), pad = Math.max(1, (ext[1]-ext[0]) * 0.18);
+    const y = d3.scaleLinear().domain([Math.min(0,ext[0])-pad, Math.max(0,ext[1])+pad]).range([sih, 0]);
+    g.append('line').attr('x1',0).attr('x2',si).attr('y1',y(0)).attr('y2',y(0))
+      .attr('stroke','rgba(255,255,255,0.18)').attr('stroke-dasharray','3,3');
+    g.append('path').datum(vals).attr('fill','none').attr('stroke','#63b3ed').attr('stroke-width',1.8)
+      .attr('d', d3.line().x((d,i)=>x(years[i])).y(d=>y(d)).curve(d3.curveCatmullRom));
+    g.append('g').attr('transform',`translate(0,${sih})`)
+      .call(d3.axisBottom(x).ticks(4).tickFormat(d3.format('d')).tickSize(2))
+      .call(ax=>ax.selectAll('text').attr('fill','#8a9eb5').attr('font-size',8))
+      .call(ax=>ax.select('.domain').attr('stroke','rgba(255,255,255,0.1)'));
+    g.append('g').call(d3.axisLeft(y).ticks(3).tickFormat(d=>d+'%').tickSize(2))
+      .call(ax=>ax.selectAll('text').attr('fill','#8a9eb5').attr('font-size',8))
+      .call(ax=>ax.select('.domain').attr('stroke','rgba(255,255,255,0.1)'));
+    g.append('text').attr('x',si/2).attr('y',-3).attr('text-anchor','middle')
+      .attr('font-size',7.5).attr('fill','#8a9eb5').text('% change vs 1980–2010 baseline');
+  }
 })();
 
 
