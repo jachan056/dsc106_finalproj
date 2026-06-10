@@ -41,13 +41,12 @@
       overflow: hidden;
     }
     
-    /* Hero Background Images (Rainforest to Desert Fade) */
     .hero-bg-container {
       position: absolute;
       inset: 0;
       z-index: 0;
       display: flex;
-      opacity: 0.25;
+      opacity: 0.25; 
     }
     .hero-bg-left {
       flex: 1;
@@ -161,7 +160,6 @@
       max-width: 800px;
     }
 
-    /* ─── INTERACTION HINT PILL ─────────────────────────── */
     .hint-pill {
       display: inline-flex;
       align-items: center;
@@ -246,9 +244,55 @@
       line-height: 1;
     }
 
-    /* ─── GLOBE SECTION ─────────────────────────────────── */
+    /* ─── SCROLL INTERLUDE ──────────────────────────── */
+    .scroll-interlude {
+      height: 300vh;
+      position: relative;
+      background-color: var(--bg);
+    }
+    .interlude-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #f7f5f0; 
+      transition: background-color 0.8s ease;
+    }
+    .interlude-content {
+      text-align: center;
+      margin-bottom: 2rem;
+      z-index: 10;
+      padding: 0 2rem;
+    }
+    .interlude-content h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: #1e2a38;
+      margin-bottom: 0.5rem;
+      transition: color 0.8s ease;
+    }
+    .interlude-content p {
+      color: #5a6e82;
+      font-size: 1.15rem;
+      max-width: 600px;
+      margin: 0 auto;
+      transition: color 0.8s ease;
+    }
+    .interlude-art {
+      width: 100%;
+      max-width: 600px;
+      height: 350px;
+      position: relative;
+    }
+
+    /* ─── GLOBE SECTION (VIZ 3) ─────────────────────────────────── */
     .globe-section {
-      background: var(--dark-bg);
+      /* Deep navy to oceanic blue gradient */
+      background: linear-gradient(to bottom, #132a4f 0%, #0a192f 100%);
       color: #eef1f5;
       padding: 6rem 2rem 4rem;
       overflow: hidden;
@@ -257,7 +301,6 @@
     .globe-section .section-heading { color: #fff; }
     .globe-section .section-lead { color: #8a9eb5; max-width: 800px; }
 
-    /* find-your-region search (Viz 3 payoff) */
     .region-search { margin: 0 0 1.4rem; }
     .region-search-label {
       display:block; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase;
@@ -473,18 +516,26 @@
       justify-content: flex-start;
     }
 
-    /* ─── MAP SECTION ───────────────────────────────────── */
+    /* ─── MAP SECTION (VIZ 2) ───────────────────────────────────── */
+    #viz2 {
+      /* Dark mode gradient bridging the gap to Navy */
+      background: linear-gradient(to bottom, #090e17 0%, #132a4f 100%);
+      color: #eef1f5;
+    }
+    #viz2 .viz-label { color: #63b3ed; }
+    #viz2 .section-heading { color: #fff; }
+    #viz2 .section-lead { color: #8a9eb5; }
+    
     .viz-card {
-      background: var(--surface);
-      border: 1px solid var(--line);
+      background: #16202c; 
+      border: 1px solid rgba(86, 114, 142, 0.22);
       border-radius: 8px;
       padding: 2rem;
       margin-top: 2rem;
     }
-    .viz-card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; }
-    .viz-card-sub   { font-size: 0.75rem; color: var(--muted); margin-bottom: 1.5rem; }
+    .viz-card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; color: #fff;}
+    .viz-card-sub   { font-size: 0.75rem; color: #8a9eb5; margin-bottom: 1.5rem; }
 
-    /* Fix: CSS resizing lock for Canvas and SVG */
     .map-stage { 
       position: relative; 
       width: 100%; 
@@ -501,55 +552,71 @@
     .map-controls { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
     .map-controls button {
       font-family: 'Source Sans 3', sans-serif; font-size: 0.85rem; font-weight: 600;
-      padding: 6px 16px; border: 1px solid var(--line); background: #fff;
-      color: var(--text); border-radius: 6px; cursor: pointer; transition: background 0.15s;
+      padding: 6px 16px; border: 1px solid rgba(86,114,142,0.5); background: #1e2a38;
+      color: #fff; border-radius: 6px; cursor: pointer; transition: background 0.15s;
     }
-    .map-controls button:hover { background: #dfe6ee; }
+    .map-controls button:hover { background: #2b7fbf; }
     .map-controls input[type=range] { flex: 1; accent-color: var(--teal); cursor: pointer; }
     .map-year {
       font-variant-numeric: tabular-nums; font-weight: 600; font-size: 1rem;
-      min-width: 52px; text-align: right; color: var(--text);
+      min-width: 52px; text-align: right; color: #fff;
     }
     .map-legend { display: flex; align-items: flex-end; gap: 0.7rem; margin-top: 1rem; }
-    .map-legend .bar { height: 12px; width: 280px; border-radius: 2px; border: 1px solid var(--line); }
+    .map-legend .bar { height: 12px; width: 280px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
     .map-legend .ticks {
       display: flex; justify-content: space-between; width: 280px;
-      font-size: 0.66rem; color: var(--muted); margin-top: 3px;
+      font-size: 0.66rem; color: #8a9eb5; margin-top: 3px;
     }
-    .map-legend .cap { font-size: 0.72rem; color: var(--muted); }
-    .map-detail { margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
-    .map-detail .hint { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.8rem; }
-    .map-detail .d-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.1rem; }
-    .map-detail .d-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .map-legend .cap { font-size: 0.72rem; color: #8a9eb5; }
+    .map-detail { margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; }
+    .map-detail .hint { font-size: 0.78rem; color: #8a9eb5; margin-bottom: 0.8rem; }
+    .map-detail .d-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.1rem; color:#fff;}
+    .map-detail .d-sub { font-size: 0.78rem; color: #8a9eb5; margin-bottom: 0.6rem; }
     #region-paths path { cursor: pointer; }
 
-    /* ─── Scenario toggle ───────────────────────────────── */
     .scenario-toggle { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.4rem; margin-bottom: 1.2rem; }
     .scenario-toggle .scn-label {
       font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--muted); align-self: center; margin-right: 0.4rem;
+      color: #8a9eb5; align-self: center; margin-right: 0.4rem;
     }
     .scenario-toggle button {
       font-family: 'Source Sans 3', sans-serif; cursor: pointer;
-      padding: 6px 14px; border: 1px solid var(--line); background: #fff;
+      padding: 6px 14px; border: 1px solid rgba(86,114,142,0.4); background: transparent;
       border-radius: 7px; text-align: left; line-height: 1.15;
       transition: background 0.15s, border-color 0.15s, color 0.15s;
     }
-    .scenario-toggle button .scn-id { display: block; font-size: 0.84rem; font-weight: 600; color: var(--text); }
-    .scenario-toggle button .scn-sub { display: block; font-size: 0.66rem; color: var(--muted); }
-    .scenario-toggle button:hover { background: #dfe6ee; }
+    .scenario-toggle button .scn-id { display: block; font-size: 0.84rem; font-weight: 600; color: #eef1f5; }
+    .scenario-toggle button .scn-sub { display: block; font-size: 0.66rem; color: #8a9eb5; }
+    .scenario-toggle button:hover { background: rgba(43,127,191,0.15); }
     .scenario-toggle button.active { background: var(--teal); border-color: var(--teal); }
     .scenario-toggle button.active .scn-id,
     .scenario-toggle button.active .scn-sub { color: #fff; }
     .scenario-toggle button:disabled { opacity: 0.45; cursor: progress; }
 
-    /* ─── NEW: VEGETATION (LAI) SECTION ─────────────────── */
+    /* ─── VEGETATION (LAI) SECTION (VIZ 4) ─────────────────── */
     .consequences-section {
-      background: #111c26;
+      position: relative;
+      /* Deep blue into Emerald Green Gradient */
+      background: linear-gradient(to bottom, #0a192f 0%, #0d3623 30%, #071f13 100%);
       color: #eef1f5;
       padding: 6rem 2rem;
+      overflow: hidden;
     }
-    .consequences-section .section-inner { max-width: 1040px; margin: 0 auto; }
+    
+    /* Background Cliparts */
+    .bg-clipart {
+      position: absolute;
+      color: #48bb78; 
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-clipart-1 { width: 600px; top: -100px; left: -150px; transform: rotate(15deg); }
+    .bg-clipart-2 { width: 800px; bottom: -200px; right: -200px; transform: rotate(-25deg); }
+    .bg-clipart-3 { width: 400px; top: 40%; left: 60%; transform: rotate(45deg); }
+    
+    .consequences-section .section-inner { position: relative; z-index: 2; max-width: 1040px; margin: 0 auto; }
+    
     .consequences-section .viz-label { color: #63b3ed; }
     .consequences-section .section-heading { color: #fff; }
     .consequences-section .section-lead { color: #b0c4de; }
@@ -608,27 +675,44 @@
       color: #cdd7e2;
       line-height: 1.5;
     }
-    .closing-takeaway {
-      margin-top: 3rem;
+
+    /* Scroll-Triggered Warning Box */
+    .warning-box {
+      margin-top: 4rem;
       text-align: center;
-      background: linear-gradient(135deg, #1e3a5f, #0f1c2c);
+      background: linear-gradient(135deg, rgba(44, 20, 20, 0.9), rgba(60, 15, 15, 0.95));
       border-radius: 16px;
-      padding: 2rem;
-      border: 1px solid #63b3ed55;
+      padding: 2.5rem 2rem;
+      border: 2px solid rgba(231, 76, 60, 0.6);
+      /* Initial states for the dynamic scroll JS to override */
+      transform: scale(0.85);
+      opacity: 0;
+      transform-origin: center center;
+      box-shadow: 0 0 10px rgba(231, 76, 60, 0);
     }
-    .closing-takeaway p {
+    .warning-icon {
+      width: 48px;
+      height: 48px;
+      color: #e74c3c;
+      margin-bottom: 1rem;
+    }
+    .warning-box p {
       font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      line-height: 1.4;
-      color: #fff;
+      font-size: 1.4rem;
+      line-height: 1.5;
+      color: #f8eceb;
       max-width: 800px;
       margin: 0 auto;
     }
-    .closing-takeaway .small {
-      font-size: 0.75rem;
-      font-family: 'Source Sans 3', sans-serif;
-      color: #8a9eb5;
-      margin-top: 1rem;
+    .warning-link {
+      color: #ff9f43;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+    .warning-link:hover {
+      color: #fff;
     }
 
     /* ─── FOOTER ────────────────────────────────────────── */
@@ -641,6 +725,97 @@
       background: var(--bg);
     }
     footer a { color: var(--teal); text-decoration: none; }
+
+    /* ─── FINAL TAKEAWAY CAROUSEL ────────────────────────── */
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 4rem auto 0;
+      background: linear-gradient(135deg, rgba(20, 44, 30, 0.9), rgba(10, 30, 20, 0.95));
+      border-radius: 16px;
+      border: 1px solid rgba(72, 187, 120, 0.4);
+      padding: 3.5rem 5rem;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .carousel-slide {
+      display: none;
+      text-align: center;
+      animation: fadeSlideInCarousel 0.5s ease-out forwards;
+    }
+    .carousel-slide.active {
+      display: block;
+    }
+    @keyframes fadeSlideInCarousel {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .carousel-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+    .carousel-slide h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 1.2rem;
+    }
+    .carousel-slide p {
+      font-size: 1.05rem;
+      color: #cdd7e2;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    .carousel-slide strong {
+      color: #48bb78; 
+    }
+    
+    /* Navigation Buttons */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, border-color 0.2s;
+      z-index: 10;
+    }
+    .carousel-btn:hover {
+      background: rgba(72, 187, 120, 0.3);
+      border-color: #48bb78;
+    }
+    .carousel-btn.prev { left: 1.5rem; }
+    .carousel-btn.next { right: 1.5rem; }
+    
+    /* Indicator Dots */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 2rem;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .dot.active {
+      background: #48bb78;
+      transform: scale(1.3);
+    }
   </style>
 </head>
 <body>
@@ -664,7 +839,6 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
   </a>
 </section>
-
 
 <section class="section-light" id="viz">
   <div class="section-inner">
@@ -719,6 +893,41 @@
   </div>
 </section>
 
+<section class="scroll-interlude" id="ecosystem-transition">
+  <div class="interlude-sticky">
+    <div class="interlude-content">
+      <h2 id="interlude-heading">A Flourishing Baseline</h2>
+      <p id="interlude-sub">As local baselines shift, landscapes transform.</p>
+    </div>
+    
+    <div class="interlude-art">
+      <svg viewBox="0 0 400 400" width="100%" height="100%">
+        <ellipse id="art-ground" cx="200" cy="320" rx="180" ry="30" fill="#719f7b" style="transition: fill 0.5s ease;" />
+        
+        <g id="art-lush" style="transform-origin: 200px 320px; transition: transform 0.2s ease-out, opacity 0.2s ease-out;">
+          <path d="M200,320 Q200,200 200,150" stroke="#4a3b32" stroke-width="14" stroke-linecap="round" fill="none"/>
+          <path d="M200,240 Q160,200 140,180" stroke="#4a3b32" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <path d="M200,210 Q240,180 260,150" stroke="#4a3b32" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <circle cx="200" cy="120" r="60" fill="#40794e" />
+          <circle cx="140" cy="160" r="50" fill="#529863" />
+          <circle cx="260" cy="140" r="55" fill="#2d5e39" />
+          <circle cx="170" cy="110" r="45" fill="#529863" />
+          <circle cx="230" cy="100" r="50" fill="#40794e" />
+        </g>
+
+        <g id="art-dry" style="transform-origin: 200px 320px; opacity: 0; transform: scale(0.6); transition: transform 0.2s ease-out, opacity 0.2s ease-out;">
+          <path d="M200,320 Q200,200 200,150" stroke="#5c4d43" stroke-width="12" stroke-linecap="round" fill="none"/>
+          <path d="M200,250 Q160,210 130,180" stroke="#5c4d43" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <path d="M200,220 Q250,190 270,160" stroke="#5c4d43" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <path d="M160,220 Q140,190 150,160" stroke="#5c4d43" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <circle cx="280" cy="80" r="35" fill="#e07a5f" />
+          <path d="M120,330 Q150,310 180,340" stroke="#a38260" stroke-width="2" fill="none"/>
+          <path d="M220,340 Q250,320 280,335" stroke="#a38260" stroke-width="2" fill="none"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
 
 <section class="section-light" id="viz2">
   <div class="section-inner viz-section--wide">
@@ -726,7 +935,7 @@
     <h2 class="section-heading" style="margin-bottom:0.6rem;">Where the Rain Is Moving</h2>
     <p class="section-lead">
       Now we project forward. This map shows how decadal-mean precipitation departs from the
-      1980–2010 baseline, as a percentage — <strong style="color:var(--text);">brown for drier, teal for wetter</strong>.
+      1980–2010 baseline, as a percentage — <strong style="color:var(--teal-light);">brown for drier, teal for wetter</strong>.
       Drag the timeline from 1980 to 2100 to watch the subtropical dry zones expand
       while high latitudes and tropics moisten — then switch the emissions pathway to compare
       a low-, middle-, and high-carbon future.
@@ -781,7 +990,6 @@
     </div>
   </div>
 </section>
-
 
 <section class="globe-section" id="globe-viz">
   <div class="section-inner">
@@ -952,6 +1160,22 @@
 </section>
 
 <section class="consequences-section" id="consequences">
+  <svg class="bg-clipart bg-clipart-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 22v-8"></path>
+    <path d="M12 14c-3.5-2-5-5-5-8 0-3.5 3-5 5-5s5 1.5 5 5c0 3-1.5 6-5 8z"></path>
+  </svg>
+  <svg class="bg-clipart bg-clipart-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 22l10-10"></path>
+    <path d="M12 12c-2-2-5-2-7 0 0 2 2 5 4 5"></path>
+    <path d="M12 12c2-2 5-2 7 0 0 2-2 5-4 5"></path>
+    <path d="M15 9c-2-2-5-2-7 0 0 2 2 5 4 5"></path>
+    <path d="M15 9c2-2 5-2 7 0 0 2-2 5-4 5"></path>
+  </svg>
+  <svg class="bg-clipart bg-clipart-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+  </svg>
+
   <div class="section-inner">
     <span class="viz-label">The Consequences · Visualization 4</span>
     <h2 class="section-heading">When the Rain Falters, So Does Vegetation</h2>
@@ -986,18 +1210,58 @@
       </div>
     </div>
 
-    <div class="closing-takeaway">
-      <p>Under high emissions, tropical vegetation declines by more than 10% which is the equivalent of losing an entire month of growing. For 1.2 billion people, this means a 15% drop in available food, leading to chronic food stress.”</p>
+    <div class="warning-box" id="warning-box">
+      <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <p>Under high emissions, tropical vegetation declines by more than 10% which is the equivalent of losing an entire month of growing. For 1.2 billion people, this means a <a href="https://www.ipcc.ch/srccl/chapter/chapter-5/" target="_blank" class="warning-link">15% drop in available food</a>, leading to chronic food stress.</p>
     </div>
   </div>
-</section>
 
+  <div class="carousel-container" id="takeaway-carousel">
+      <button class="carousel-btn prev" id="car-prev">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+
+      <div class="carousel-slide active">
+        <div class="carousel-icon">🌍🌾</div>
+        <h3>The Core Takeaway: Water Moves, Farms Cannot</h3>
+        <p>If there is one thing to learn from this data, it is that shifting rain is fundamentally a <strong>global food security crisis</strong>. Our agricultural systems are locked into place, but the water they rely on is migrating away from the subtropics.</p>
+        <p>As precipitation drops, the vegetation essential for our survival dies, cascading directly into crop failures and threatening global stability.</p>
+      </div>
+
+      <div class="carousel-slide">
+        <div class="carousel-icon">📉🔗</div>
+        <h3>Tracing the Chain of Events</h3>
+        <p>Our visualizations were structured to prove this exact cascading failure. We began by establishing the fragile rhythm of our historical climate (<strong>Vis 1</strong>).</p>
+        <p>We then proved how drastically global and regional water patterns will diverge from that baseline (<strong>Vis 2 & 3</strong>). Finally, we mapped the ultimate consequence: missing rain directly equals dying canopies and food stress (<strong>Vis 4</strong>).</p>
+      </div>
+
+      <div class="carousel-slide">
+        <div class="carousel-icon">🎯💡</div>
+        <h3>Why This Narrative Works</h3>
+        <p>Climate data is famously abstract and difficult to grasp. This project succeeds because it makes a global crisis <strong>intimately personal</strong>.</p>
+        <p>By allowing users to set their own thresholds, compare future scenarios, and specifically search their own hometowns on a 3D globe, we transform distant, complex climate models into tangible, localized, and undeniable human consequences.</p>
+      </div>
+
+      <button class="carousel-btn next" id="car-next">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+
+      <div class="carousel-dots">
+        <div class="dot active" data-slide="0"></div>
+        <div class="dot" data-slide="1"></div>
+        <div class="dot" data-slide="2"></div>
+      </div>
+    </div>
+</section>
 
 <footer>
   Data: <a href="https://wcrp-cmip.org/cmip-phases/cmip6/" target="_blank">CMIP6 / CESM2</a>
   &nbsp;·&nbsp; DSC 106, Spring 2026, UC San Diego
 </footer>
-
 
 <div id="globe-tooltip"></div>
 
@@ -1011,6 +1275,95 @@ for (let i = 0; i < 55; i++) {
   d.style.cssText = `left:${Math.random()*100}%;height:${h}px;animation-duration:${1.2+Math.random()*2}s;animation-delay:${-Math.random()*4}s;opacity:${0.2+Math.random()*0.4};`;
   rain.appendChild(d);
 }
+
+// ─── SCROLL INTERLUDE & WARNING BOX ANIMATION ────────────
+window.addEventListener('scroll', () => {
+  const winHeight = window.innerHeight;
+  
+  // 1. Ecosystem Transition Animation
+  const section = document.getElementById('ecosystem-transition');
+  if(section) {
+    const rect = section.getBoundingClientRect();
+    let progress = -rect.top / (rect.height - winHeight);
+    progress = Math.max(0, Math.min(1, progress));
+
+    const sticky = document.querySelector('.interlude-sticky');
+    const ground = document.getElementById('art-ground');
+    const lushTree = document.getElementById('art-lush');
+    const dryTree = document.getElementById('art-dry');
+    const heading = document.getElementById('interlude-heading');
+    const sub = document.getElementById('interlude-sub');
+
+    if (progress < 0.3) {
+      const scale = 0.6 + (progress / 0.3) * 0.4;
+      lushTree.style.transform = `scale(${scale})`;
+      lushTree.style.opacity = 1;
+      dryTree.style.opacity = 0;
+      dryTree.style.transform = `scale(0.6)`;
+      
+      ground.setAttribute('fill', '#719f7b');
+      sticky.style.backgroundColor = '#f7f5f0';
+      heading.style.color = '#1e2a38';
+      sub.style.color = '#5a6e82';
+      heading.innerText = "A Flourishing Baseline";
+    } else if (progress < 0.5) {
+      lushTree.style.transform = `scale(1)`;
+      lushTree.style.opacity = 1;
+      dryTree.style.opacity = 0;
+      
+      ground.setAttribute('fill', '#719f7b');
+      sticky.style.backgroundColor = '#f7f5f0';
+      heading.style.color = '#1e2a38';
+      sub.style.color = '#5a6e82';
+      heading.innerText = "A Delicate Balance";
+    } else if (progress < 0.8) {
+      const desertProg = (progress - 0.5) / 0.3;
+      lushTree.style.opacity = 1 - (desertProg * 2);
+      lushTree.style.transform = `scale(${1 - (desertProg * 0.2)})`;
+      
+      dryTree.style.opacity = desertProg * 2;
+      dryTree.style.transform = `scale(${0.7 + (desertProg * 0.3)})`;
+      
+      ground.setAttribute('fill', '#d4a373'); 
+      sticky.style.backgroundColor = '#eedcb5'; 
+      heading.style.color = '#1e2a38';
+      sub.style.color = '#5a6e82';
+      heading.innerText = "The Aridification Threat";
+    } else {
+      lushTree.style.opacity = 0;
+      dryTree.style.opacity = 1;
+      dryTree.style.transform = `scale(1)`;
+      
+      sticky.style.backgroundColor = '#090e17'; 
+      ground.setAttribute('fill', '#a37247'); 
+      heading.style.color = '#ffffff';
+      sub.style.color = '#8a9eb5';
+    }
+  }
+
+  // 2. Warning Box Scale Animation
+  const warningBox = document.getElementById('warning-box');
+  if(warningBox) {
+    const wRect = warningBox.getBoundingClientRect();
+    if(wRect.top < winHeight && wRect.bottom > 0) {
+      // Calculate scroll ratio (0 = just entered bottom, 1 = at top of screen)
+      let scrollRatio = 1 - (wRect.top / winHeight);
+      scrollRatio = Math.max(0, Math.min(1, scrollRatio));
+      
+      // Scales from 0.85 up to 1.08 max
+      const scale = 0.85 + (scrollRatio * 0.35); 
+      // Glow intensity increases up to 50px spread
+      const glow = scrollRatio * 50; 
+      // Opacity fades in fast
+      const opacity = scrollRatio * 2; 
+      
+      warningBox.style.transform = `scale(${Math.min(scale, 1.08)})`;
+      warningBox.style.boxShadow = `0 0 ${glow}px rgba(231, 76, 60, ${Math.min(scrollRatio * 0.8, 0.6)})`;
+      warningBox.style.opacity = Math.min(opacity, 1);
+    }
+  }
+});
+
 
 // ─── BAR CHART (precipitation) ─────────────────────────
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -1130,7 +1483,7 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
   .text('Month (1980–2010 average)');
 
 
-// ─── GLOBE (unchanged, but keep the existing code) ──────────────────────────────
+// ─── GLOBE ──────────────────────────────────────────────
 (function() {
   const container = document.getElementById('globe-container');
 
@@ -1177,7 +1530,7 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
     },
     {
       id: "Mawsynram", title: "Meghalaya, India", coords: [91.5, 25.3], color: "#fc8181",
-      img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Nohkalikai_Falls_Cherrapunji.jpg/320px-Nohkalikai_Falls_Cherrapunji.jpg",
+      img: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=320&q=80&fit=crop",
       spark: [32.0,32.2,32.4,32.6,32.8,33.1,33.4,33.7,34.0,34.4,34.8,35.2,35.7,36.1,36.6,37.0,37.5,38.0,38.5,39.0],
       sparkLabel: "Mean precip (mm/day) · Mawsynram · 1960–2090",
       sparkColor: "#fc8181"
@@ -1389,7 +1742,6 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
     updateGlobe();
   });
 
-  // Find‑your‑region search (same as before)
   const AR6_ALIASES = {
     'san diego':'NCA','mexico city':'NCA','mexico':'NCA','guadalajara':'NCA','houston':'NCA','phoenix':'NCA','monterrey':'NCA',
     'los angeles':'WNA','san francisco':'WNA','las vegas':'WNA','denver':'WNA','salt lake city':'WNA','california':'WNA',
@@ -1850,7 +2202,7 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
 })();
 
 
-// ==================== NEW: LAI VEGETATION BAR CHART ====================
+// ==================== LAI VEGETATION BAR CHART ====================
 (function () {
   const laiSvg = d3.select("#lai-bar-svg");
   const laiWidth = 800, laiHeight = 360;
@@ -1862,9 +2214,7 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
     .attr("class", "lai-tooltip");
 
   d3.csv("final_lai_data.csv").then(raw => {
-    // Filter for years 2070–2100
     const endCentury = raw.filter(d => +d.year >= 2070);
-    // Group by region, compute mean % change
     const regionMap = new Map();
     endCentury.forEach(d => {
       const reg = d.region;
@@ -1879,7 +2229,6 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
       region,
       pctChange: sum / count
     }));
-    // Order by pctChange (ascending for horizontal bar chart)
     regionData.sort((a, b) => a.pctChange - b.pctChange);
 
     const x = d3.scaleLinear()
@@ -1894,7 +2243,6 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
     const g = laiSvg.append("g")
       .attr("transform", `translate(${laiMargin.left},${laiMargin.top})`);
 
-    // Axes
     g.append("g")
       .call(d3.axisLeft(y).tickSize(0))
       .call(ax => ax.selectAll("text").attr("fill", "#cdd7e2").attr("font-size", "11px"));
@@ -1905,7 +2253,6 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
       .call(ax => ax.selectAll("text").attr("fill", "#8a9eb5"))
       .call(ax => ax.select(".domain").attr("stroke", "#2b7fbf55"));
 
-    // Vertical zero line
     g.append("line")
       .attr("x1", x(0))
       .attr("x2", x(0))
@@ -1915,7 +2262,6 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
       .attr("stroke-dasharray", "4,3")
       .attr("stroke-width", 1);
 
-    // Bars
     g.selectAll(".lai-bar")
       .data(regionData)
       .enter()
@@ -1948,7 +2294,6 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
         tooltip.style("opacity", 0);
       });
 
-    // Value labels at the end of each bar
     g.selectAll(".lai-label")
       .data(regionData)
       .enter()
@@ -1961,7 +2306,6 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
       .attr("font-size", "10px")
       .text(d => (d.pctChange > 0 ? "+" : "") + d.pctChange.toFixed(1) + "%");
 
-    // X-axis label
     g.append("text")
       .attr("x", innerWidth / 2)
       .attr("y", innerHeight + 36)
@@ -1978,6 +2322,40 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
       .attr("text-anchor", "middle")
       .attr("fill", "#fc8181")
       .text("⚠ Could not load final_lai_data.csv. Make sure the file is in the same folder.");
+  });
+})();
+// ─── INTERACTIVE TAKEAWAY CAROUSEL LOGIC ──────────────────────
+(function() {
+  const slides = document.querySelectorAll('.carousel-slide');
+  const dots = document.querySelectorAll('.dot');
+  const btnPrev = document.getElementById('car-prev');
+  const btnNext = document.getElementById('car-next');
+  let currentSlide = 0;
+
+  if (!slides.length) return;
+
+  function showSlide(index) {
+    if (index >= slides.length) currentSlide = 0;
+    else if (index < 0) currentSlide = slides.length - 1;
+    else currentSlide = index;
+
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === currentSlide);
+    });
+
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentSlide);
+    });
+  }
+
+  if(btnNext) btnNext.addEventListener('click', () => showSlide(currentSlide + 1));
+  if(btnPrev) btnPrev.addEventListener('click', () => showSlide(currentSlide - 1));
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      const slideIndex = parseInt(e.target.getAttribute('data-slide'));
+      showSlide(slideIndex);
+    });
   });
 })();
 </script>
