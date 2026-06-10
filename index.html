@@ -306,6 +306,10 @@
       display:block; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase;
       color:#63b3ed; margin-bottom:0.5rem;
     }
+    .region-search-card { cursor: default; }
+    .region-search-card:hover { background: rgba(30, 42, 56, 0.5); border-color: rgba(86,114,142,0.22); }
+    .region-search-card strong { color: #cdd7e2; }
+    .region-search-card .region-search-box { margin-top: 1rem; }
     .region-search-box { position: relative; }
     #region-search-input {
       width:100%; box-sizing:border-box; font-family:'Source Sans 3',sans-serif; font-size:0.95rem;
@@ -816,6 +820,48 @@
       background: #48bb78;
       transform: scale(1.3);
     }
+
+    /* ── Closing takeaway (loop-close) ── */
+    .closing-takeaway { max-width: 760px; margin: 5rem auto 0; text-align: center; padding: 0 1rem; }
+    .closing-eyebrow { font-size: 0.95rem; letter-spacing: 0.03em; color: #8fd3b0; margin: 0 0 0.4rem; }
+    .closing-question {
+      font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4.2vw, 2.7rem);
+      color: #fff; margin: 0 0 2.2rem; line-height: 1.14;
+    }
+    .closing-points { list-style: none; padding: 0; margin: 0 auto 2.4rem; text-align: left; max-width: 680px; }
+    .closing-points li {
+      position: relative; padding-left: 1.5rem; margin-bottom: 1rem;
+      color: #cfe3d6; font-size: 1.02rem; line-height: 1.55;
+    }
+    .closing-points li::before {
+      content: ''; position: absolute; left: 0; top: 0.6em;
+      width: 7px; height: 7px; border-radius: 50%; background: #48bb78;
+    }
+    .closing-points strong { color: #fff; }
+    .closing-flip {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(72,187,120,0.3);
+      border-radius: 12px; padding: 1.4rem 1.6rem; color: #cfe3d6;
+      font-size: 1.04rem; line-height: 1.6; margin: 0 auto 2rem; max-width: 680px; text-align: left;
+    }
+    .closing-flip-strong { display: block; margin-top: 0.6rem; color: #fff; font-weight: 600; }
+    .closing-local {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 1.16rem; line-height: 1.6; color: #fff; max-width: 620px; margin: 0 auto;
+    }
+    .closing-local strong { font-style: normal; color: #8fd3b0; }
+
+    /* ── References / sources ── */
+    .references { background: var(--bg); padding: 4rem 2rem 1.5rem; }
+    .references .ref-inner { max-width: 1000px; margin: 0 auto; }
+    .ref-heading { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 1.6rem; }
+    .ref-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+    .ref-col h4 { font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); margin: 0 0 0.7rem; }
+    .ref-col ul { list-style: none; padding: 0; margin: 0; }
+    .ref-col li { font-size: 0.9rem; color: var(--text); line-height: 1.5; margin-bottom: 0.7rem; }
+    .ref-col a { color: var(--teal); text-decoration: none; border-bottom: 1px solid rgba(43,127,191,0.3); }
+    .ref-col a:hover { border-bottom-color: var(--teal); }
+    .ref-col code { font-family: monospace; font-size: 0.82em; background: rgba(30,42,56,0.08); padding: 1px 5px; border-radius: 3px; }
+    .ref-note { font-size: 0.8rem; color: var(--muted); line-height: 1.5; margin: 2rem 0 0; max-width: 840px; }
   </style>
 </head>
 <body>
@@ -1024,13 +1070,6 @@
 
     <div class="globe-layout">
       <div class="globe-cards-col">
-        <div class="region-search">
-          <label class="region-search-label" for="region-search-input">Find your region</label>
-          <div class="region-search-box">
-            <input type="text" id="region-search-input" placeholder="Search a city, country, or region…" autocomplete="off" spellcheck="false" />
-            <div class="region-search-results" id="region-search-results"></div>
-          </div>
-        </div>
         <div id="globe-cards-view">
           <div class="rainfall-card" id="card-Amazon" onclick="flyToGlobe(-60, -10, 'Amazon')">
             <h3>🌿 The Amazon Rainforest</h3>
@@ -1043,6 +1082,15 @@
           <div class="rainfall-card" id="card-Mawsynram" onclick="flyToGlobe(91.5, 25.3, 'Mawsynram')">
             <h3>🌧 Mawsynram, India</h3>
             <p>The wettest place on Earth at ~11,871 mm/year. The South Asian monsoon is projected to intensify 5–20% under high emissions — more total rain, but delivered in shorter, more violent bursts that overwhelm infrastructure.</p>
+          </div>
+
+          <div class="rainfall-card region-search-card">
+            <h3>📍 Find Your Region</h3>
+            <p>Beyond the extremes, search any city, country, or region to see its own projected trajectory. Every place maps to one of the <strong>46 IPCC AR6 reference regions</strong> — the standardized sub-continental zones climate scientists use to summarize regional change.</p>
+            <div class="region-search-box">
+              <input type="text" id="region-search-input" placeholder="Search a city, country, or region…" autocomplete="off" spellcheck="false" />
+              <div class="region-search-results" id="region-search-results"></div>
+            </div>
           </div>
         </div>
 
@@ -1256,6 +1304,52 @@
         <div class="dot" data-slide="2"></div>
       </div>
     </div>
+
+  <div class="closing-takeaway">
+    <p class="closing-eyebrow">We opened by asking where the water would fall — and where it would vanish.</p>
+    <h2 class="closing-question">You've watched it move. Here's what moves with us.</h2>
+
+    <ul class="closing-points">
+      <li>A warming planet is, before anything else, a story about <strong>water</strong> — rain is <em>moving</em>, not simply rising or vanishing everywhere at once.</li>
+      <li>The regions that dry out are the <strong>subtropics</strong> — where much of the world's farmland, and a large share of its people, already live.</li>
+      <li>Where the rain leaves, the green follows: drying regions brown, and the <strong>vegetation map ends up looking like the rain map</strong>.</li>
+      <li>The same place can face <strong>more drought and more flooding at once</strong>, as a year's rain arrives in fewer, heavier bursts.</li>
+      <li>How far this goes is <strong>still undecided</strong> — the distance between the emission pathways is measured in billions of people.</li>
+    </ul>
+
+    <p class="closing-flip">
+      Under <strong>high emissions (SSP5-8.5)</strong>, far more of the world's population lives in regions where precipitation is projected to decline than under a <strong>low-emissions (SSP1-2.6)</strong> path.
+      <span class="closing-flip-strong">The gap between those futures isn't set by the climate — it's set by us.</span>
+    </p>
+
+    <p class="closing-local">
+      Right here in <strong>Southern California</strong> — a Mediterranean-type climate already living on the dry edge — the models lean drier and more erratic. Where the rain falls was never an abstract question. It's home.
+    </p>
+  </div>
+</section>
+
+<section class="references" id="references">
+  <div class="ref-inner">
+    <h2 class="ref-heading">Data &amp; Sources</h2>
+    <div class="ref-grid">
+      <div class="ref-col">
+        <h4>Climate data</h4>
+        <ul>
+          <li><a href="https://wcrp-cmip.org/cmip-phases/cmip6/" target="_blank" rel="noopener">CMIP6</a> — Coupled Model Intercomparison Project Phase 6, accessed via the Pangeo Google-Cloud archive.</li>
+          <li><a href="https://www.cesm.ucar.edu/models/cesm2" target="_blank" rel="noopener">NCAR CESM2</a> — precipitation (<code>pr</code>) and leaf-area index (<code>lai</code>); historical + SSP1-2.6 / SSP2-4.5 / SSP5-8.5, ensemble member r4i1p1f1.</li>
+          <li><a href="https://doi.org/10.5194/essd-12-2959-2020" target="_blank" rel="noopener">IPCC AR6 reference regions</a> — Iturbide et al. (2020), <em>Earth Syst. Sci. Data</em>, via the <code>regionmask</code> package.</li>
+        </ul>
+      </div>
+      <div class="ref-col">
+        <h4>Projections &amp; impacts</h4>
+        <ul>
+          <li><a href="https://www.ipcc.ch/report/ar6/wg1/" target="_blank" rel="noopener">IPCC AR6 WG1</a> — Ch. 8, <em>Water Cycle Changes</em> (subtropical drying, high-latitude and monsoon intensification).</li>
+          <li><a href="https://www.ipcc.ch/srccl/" target="_blank" rel="noopener">IPCC SRCCL</a> — Ch. 5, <em>Food Security</em> (rain-fed yield losses and food-stress impacts).</li>
+        </ul>
+      </div>
+    </div>
+    <p class="ref-note">All percentages are decadal means relative to the 1980–2010 baseline, area-weighted by latitude. Specific narrative figures (Amazon dry-season extension, affected-population estimates, monsoon intensification) are drawn from the IPCC assessments above; consult the cited chapters for the underlying primary literature.</p>
+  </div>
 </section>
 
 <footer>
@@ -1864,7 +1958,10 @@ g.append('text').attr('x',w/2).attr('y',hh+42)
       flyToRegion(abbr);
     }
 
-    input.addEventListener('input', () => render(searchRegions(input.value)));
+    input.addEventListener('input', () => {
+      if (!input.value.trim()) { box.classList.remove('open'); box.innerHTML=''; currentResults=[]; return; }
+      render(searchRegions(input.value));
+    });
     input.addEventListener('focus', () => { if (input.value) render(searchRegions(input.value)); });
     input.addEventListener('blur', () => setTimeout(() => box.classList.remove('open'), 120));
     input.addEventListener('keydown', e => {
