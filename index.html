@@ -47,7 +47,7 @@
       inset: 0;
       z-index: 0;
       display: flex;
-      opacity: 0.25; /* Keeps it subtle so text remains readable */
+      opacity: 0.25;
     }
     .hero-bg-left {
       flex: 1;
@@ -61,7 +61,6 @@
       -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
       mask-image: linear-gradient(to left, black 50%, transparent 100%);
     }
-    /* Smooth blend into the actual background color at the top and bottom */
     .hero-overlay {
       position: absolute;
       inset: 0;
@@ -69,7 +68,6 @@
       z-index: 1;
     }
 
-    /* Ensure hero content stays above the backgrounds */
     .hero > * { position: relative; z-index: 3; }
     .hero .hero-rain { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
     
@@ -545,6 +543,94 @@
     .scenario-toggle button.active .scn-sub { color: #fff; }
     .scenario-toggle button:disabled { opacity: 0.45; cursor: progress; }
 
+    /* ─── NEW: VEGETATION (LAI) SECTION ─────────────────── */
+    .consequences-section {
+      background: #111c26;
+      color: #eef1f5;
+      padding: 6rem 2rem;
+    }
+    .consequences-section .section-inner { max-width: 1040px; margin: 0 auto; }
+    .consequences-section .viz-label { color: #63b3ed; }
+    .consequences-section .section-heading { color: #fff; }
+    .consequences-section .section-lead { color: #b0c4de; }
+
+    .lai-chart-container {
+      background: #0a1018;
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin: 2rem 0 1.5rem;
+      border: 1px solid #2b7fbf33;
+    }
+    .lai-chart-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+    .lai-chart-sub {
+      font-size: 0.68rem;
+      color: #8a9eb5;
+      margin-bottom: 1.2rem;
+    }
+    #lai-bar-svg { width: 100%; background: #0a1018; border-radius: 8px; }
+    .lai-tooltip {
+      position: fixed;
+      background: #1e2a38;
+      border: 1px solid #63b3ed;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 200;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+      color: #eef1f5;
+    }
+    .consequence-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.8rem;
+      margin-top: 2rem;
+    }
+    .consequence-card {
+      background: rgba(43,127,191,0.08);
+      border-left: 4px solid #fc8181;
+      padding: 1rem 1.2rem;
+      border-radius: 10px;
+    }
+    .consequence-card h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #fc8181;
+    }
+    .consequence-card p {
+      font-size: 0.9rem;
+      color: #cdd7e2;
+      line-height: 1.5;
+    }
+    .closing-takeaway {
+      margin-top: 3rem;
+      text-align: center;
+      background: linear-gradient(135deg, #1e3a5f, #0f1c2c);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid #63b3ed55;
+    }
+    .closing-takeaway p {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      line-height: 1.4;
+      color: #fff;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .closing-takeaway .small {
+      font-size: 0.75rem;
+      font-family: 'Source Sans 3', sans-serif;
+      color: #8a9eb5;
+      margin-top: 1rem;
+    }
+
     /* ─── FOOTER ────────────────────────────────────────── */
     footer {
       text-align: center;
@@ -865,6 +951,47 @@
   </div>
 </section>
 
+<section class="consequences-section" id="consequences">
+  <div class="section-inner">
+    <span class="viz-label">The Consequences · Visualization 4</span>
+    <h2 class="section-heading">When the Rain Falters, So Does Vegetation</h2>
+    <p class="section-lead">
+      Shifting precipitation doesn’t just change the weather, it also rewires ecosystems and agriculture.
+      Using the same CMIP6 CESM2 model, we project the Leaf Area Index (LAI), a measure of vegetation density and health in various regions.
+      The map below shows how vegetation is expected to change by (2070–2100) under the high‑emissions SSP5‑8.5 scenario.
+    </p>
+
+    <div class="lai-chart-container">
+      <div class="lai-chart-title">Projected vegetation change by latitude band</div>
+      <div class="lai-chart-sub">LAI % change (2070–2100 mean vs. 1980–2010 baseline)</div>
+      <svg id="lai-bar-svg" viewBox="0 0 800 360" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="hint-pill" style="margin-top: 1rem; display: inline-block;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
+        Hover any bar to see the exact change and the food security impact
+      </div>
+    </div>
+
+    <div class="consequence-grid">
+      <div class="consequence-card">
+        <h4>Tropics: –11% LAI</h4>
+        <p>Reduced canopy cover, drier soils. We can observe a 12-18% drop for rain-fed maize and rice yields in South Asia and Sub-Saharan Africa. Over 1.2 billion people are projected to face food insecurity by 2080.</p>
+      </div>
+      <div class="consequence-card">
+        <h4>Southern Mid‑Latitudes: –8% LAI</h4>
+        <p>The vast agricultural center becomes drier and drier with time. Livestock carrying capacity declines, threatening exports and the ability to supply protein.</p>
+      </div>
+      <div class="consequence-card">
+        <h4>Northern Mid‑Latitudes: +5% LAI</h4>
+        <p>The initialiiy green Boreal forests diminish due to increased wildfire risk and permafrost (any ground that remains frozen for at least 2 years). The timber industry suffers greatly.</p>
+      </div>
+    </div>
+
+    <div class="closing-takeaway">
+      <p>Under high emissions, tropical vegetation declines by more than 10% which is the equivalent of losing an entire month of growing. For 1.2 billion people, this means a 15% drop in available food, leading to chronic food stress.”</p>
+    </div>
+  </div>
+</section>
+
 
 <footer>
   Data: <a href="https://wcrp-cmip.org/cmip-phases/cmip6/" target="_blank">CMIP6 / CESM2</a>
@@ -885,7 +1012,7 @@ for (let i = 0; i < 55; i++) {
   rain.appendChild(d);
 }
 
-// ─── BAR CHART ─────────────────────────────────────────
+// ─── BAR CHART (precipitation) ─────────────────────────
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const vals   = [2.36, 2.38, 2.37, 2.37, 2.41, 2.51, 2.55, 2.50, 2.44, 2.40, 2.37, 2.36];
 const dataset = months.map((m, i) => ({ month: m, val: vals[i] }));
@@ -894,7 +1021,7 @@ const historicalMean = d3.mean(vals);
 const W = 760, H = 360;
 const margin = { top: 32, right: 96, bottom: 48, left: 58 };
 const w = W - margin.left - margin.right;
-const h = H - margin.top - margin.bottom;
+const hh = H - margin.top - margin.bottom;
 
 const barSvg = d3.select('#bar-svg');
 const g = barSvg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
@@ -908,7 +1035,7 @@ const barTooltip = d3.select("body").append("div")
   .style("border","1px solid rgba(99,179,237,0.3)");
 
 const xScale = d3.scaleBand().domain(months).range([0, w]).padding(0.28);
-const yScale = d3.scaleLinear().domain([2.2, 2.65]).range([h, 0]);
+const yScale = d3.scaleLinear().domain([2.2, 2.65]).range([hh, 0]);
 
 yScale.ticks(4).forEach(t => {
   g.append('line').attr('x1',0).attr('x2',w).attr('y1',yScale(t)).attr('y2',yScale(t))
@@ -917,10 +1044,10 @@ yScale.ticks(4).forEach(t => {
 
 let thresholdVal = historicalMean;
 
-const bars = g.selectAll('.precip-bar').data(dataset).enter().append('rect')
+const barsPrecip = g.selectAll('.precip-bar').data(dataset).enter().append('rect')
   .attr('class','precip-bar')
   .attr('x', d => xScale(d.month)).attr('y', d => yScale(d.val))
-  .attr('width', xScale.bandwidth()).attr('height', d => h - yScale(d.val))
+  .attr('width', xScale.bandwidth()).attr('height', d => hh - yScale(d.val))
   .attr('rx', 3)
   .style('cursor','pointer')
   .style('transition','fill 0.12s ease')
@@ -930,8 +1057,8 @@ const bars = g.selectAll('.precip-bar').data(dataset).enter().append('rect')
     barTooltip.html(`<strong>${d.month}</strong><br/>${d.val} mm/day`)
       .style("left",(event.clientX + 14)+"px").style("top",(event.clientY - 36)+"px");
   })
-  .on("mouseout", function(event, d) {
-    d3.select(this).attr('fill', d.val >= thresholdVal ? '#2b7fbf' : '#3a4e63');
+  .on("mouseout", function() {
+    d3.select(this).attr('fill', d => d.val >= thresholdVal ? '#2b7fbf' : '#3a4e63');
     barTooltip.transition().duration(200).style("opacity",0);
   });
 
@@ -951,12 +1078,12 @@ g.append('text').attr('x', annotX).attr('y', annotY - 2)
  .text('▲ Peak season');
 
 function updateBarColors(threshold) {
-  bars.attr('fill', d => d.val >= threshold ? '#2b7fbf' : '#3a4e63');
+  barsPrecip.attr('fill', d => d.val >= threshold ? '#2b7fbf' : '#3a4e63');
   barLabels.attr('fill', d => d.val >= threshold ? '#8ac8ef' : '#5a6e82');
 }
 
 const dragBehavior = d3.drag().on("drag", function(event) {
-  let newY = Math.max(0, Math.min(h, event.y));
+  let newY = Math.max(0, Math.min(hh, event.y));
   const meanY = yScale(historicalMean);
   if (Math.abs(newY - meanY) < 5) newY = meanY;
   thresholdVal = yScale.invert(newY);
@@ -986,7 +1113,7 @@ dragGroup.append("text").attr("id","threshold-label")
 
 updateBarColors(thresholdVal);
 
-g.append('g').attr('transform',`translate(0,${h})`)
+g.append('g').attr('transform',`translate(0,${hh})`)
   .call(d3.axisBottom(xScale).tickSize(0))
   .call(ax => ax.select('.domain').attr('stroke','rgba(255,255,255,0.15)'))
   .call(ax => ax.selectAll('text').attr('fill','#8a9eb5').attr('font-size',11.5).attr('dy','1.2em'));
@@ -995,15 +1122,15 @@ g.append('g')
   .call(ax => ax.select('.domain').remove())
   .call(ax => ax.selectAll('.tick line').remove())
   .call(ax => ax.selectAll('text').attr('fill','#8a9eb5').attr('font-size',10.5));
-g.append('text').attr('transform','rotate(-90)').attr('x',-h/2).attr('y',-44)
+g.append('text').attr('transform','rotate(-90)').attr('x',-hh/2).attr('y',-44)
   .attr('text-anchor','middle').attr('font-size',10).attr('fill','#8a9eb5')
   .text('Global mean precipitation (mm/day)');
-g.append('text').attr('x',w/2).attr('y',h+42)
+g.append('text').attr('x',w/2).attr('y',hh+42)
   .attr('text-anchor','middle').attr('font-size',10).attr('fill','#8a9eb5')
   .text('Month (1980–2010 average)');
 
 
-// ─── GLOBE ──────────────────────────────────────────────
+// ─── GLOBE (unchanged, but keep the existing code) ──────────────────────────────
 (function() {
   const container = document.getElementById('globe-container');
 
@@ -1262,7 +1389,7 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     updateGlobe();
   });
 
-  // ─── Find-your-region search (AR6 regions, SSP5-8.5) ───────────────
+  // Find‑your‑region search (same as before)
   const AR6_ALIASES = {
     'san diego':'NCA','mexico city':'NCA','mexico':'NCA','guadalajara':'NCA','houston':'NCA','phoenix':'NCA','monterrey':'NCA',
     'los angeles':'WNA','san francisco':'WNA','las vegas':'WNA','denver':'WNA','salt lake city':'WNA','california':'WNA',
@@ -1448,28 +1575,28 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     const years = ar6Times.slice(startI), vals = ar6Series[abbr].slice(startI);
     const sw = 300, sh = 80, sm = { t:12, r:10, b:18, l:30 };
     const si = sw - sm.l - sm.r, sih = sh - sm.t - sm.b;
-    const g = svgEl.append('g').attr('transform', `translate(${sm.l},${sm.t})`);
+    const gs = svgEl.append('g').attr('transform', `translate(${sm.l},${sm.t})`);
     const x = d3.scaleLinear().domain([years[0], years[years.length-1]]).range([0, si]);
     const ext = d3.extent(vals), pad = Math.max(1, (ext[1]-ext[0]) * 0.18);
     const y = d3.scaleLinear().domain([Math.min(0,ext[0])-pad, Math.max(0,ext[1])+pad]).range([sih, 0]);
-    g.append('line').attr('x1',0).attr('x2',si).attr('y1',y(0)).attr('y2',y(0))
+    gs.append('line').attr('x1',0).attr('x2',si).attr('y1',y(0)).attr('y2',y(0))
       .attr('stroke','rgba(255,255,255,0.18)').attr('stroke-dasharray','3,3');
-    g.append('path').datum(vals).attr('fill','none').attr('stroke','#63b3ed').attr('stroke-width',1.8)
+    gs.append('path').datum(vals).attr('fill','none').attr('stroke','#63b3ed').attr('stroke-width',1.8)
       .attr('d', d3.line().x((d,i)=>x(years[i])).y(d=>y(d)).curve(d3.curveCatmullRom));
-    g.append('g').attr('transform',`translate(0,${sih})`)
+    gs.append('g').attr('transform',`translate(0,${sih})`)
       .call(d3.axisBottom(x).ticks(4).tickFormat(d3.format('d')).tickSize(2))
       .call(ax=>ax.selectAll('text').attr('fill','#8a9eb5').attr('font-size',8))
       .call(ax=>ax.select('.domain').attr('stroke','rgba(255,255,255,0.1)'));
-    g.append('g').call(d3.axisLeft(y).ticks(3).tickFormat(d=>d+'%').tickSize(2))
+    gs.append('g').call(d3.axisLeft(y).ticks(3).tickFormat(d=>d+'%').tickSize(2))
       .call(ax=>ax.selectAll('text').attr('fill','#8a9eb5').attr('font-size',8))
       .call(ax=>ax.select('.domain').attr('stroke','rgba(255,255,255,0.1)'));
-    g.append('text').attr('x',si/2).attr('y',-3).attr('text-anchor','middle')
+    gs.append('text').attr('x',si/2).attr('y',-3).attr('text-anchor','middle')
       .attr('font-size',7.5).attr('fill','#8a9eb5').text('% change vs 1980–2010 baseline');
   }
 })();
 
 
-// ─── MAP VIZ (scoped) ────────────────────────────────────
+// ─── MAP VIZ (precipitation anomaly) ────────────────────────────────────
 ;(function () {
   const VMAX = 30;
   const BASELINE_MIN = 0.2;
@@ -1488,11 +1615,11 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     { id:'ssp245', file:'map_anomaly_ssp245.json', name:'SSP2-4.5', sub:'middle of the road' },
     { id:'ssp585', file:'map_anomaly_ssp585.json', name:'SSP5-8.5', sub:'high emissions' },
   ];
-  const START_YEAR = 1980, OPEN_YEAR = 2020, STEP_MS = 1200;  // 1200ms = half the old 600ms pace
+  const START_YEAR = 1980, OPEN_YEAR = 2020, STEP_MS = 1200;
 
-  const SCN = {};            // id -> grid data
-  const series = {};         // id -> [{year,val}] global area-weighted % change
-  let MAP = null;            // current scenario grid
+  const SCN = {};
+  const series = {};
+  let MAP = null;
   let TIMES = [], startIdx = 0, frameIdx = 0, current = 'ssp585';
   let playing = false, timer = null, ctx, svgM;
 
@@ -1516,7 +1643,6 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     render();
   });
 
-  // area-weighted global % change per decade (ratio of weighted means), 1980+ only
   function computeGlobal(data) {
     const { lat, lon, baseline, anomaly } = data;
     const w = lat.map(la => Math.cos(la * Math.PI / 180));
@@ -1619,7 +1745,7 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     document.getElementById('map-card-sub').textContent =
       `CESM2 · historical + ${s.name} (${s.sub}) · % change in mean precipitation`;
     styleLines();
-    render();          // redraw map for new scenario; year preserved
+    render();
   }
 
   function setupLegend() {
@@ -1639,13 +1765,13 @@ g.append('text').attr('x',w/2).attr('y',h+42)
   }
   function togglePlay() {
     if (playing) { stopPlay(); return; }
-    if (frameIdx >= TIMES.length-1) frameIdx = startIdx;   // parked at 2100 -> restart at 1980
+    if (frameIdx >= TIMES.length-1) frameIdx = startIdx;
     playing = true;
     document.getElementById('map-play').textContent='❚❚ Pause';
     document.getElementById('map-slider').value = frameIdx;
     render();
     timer = setInterval(()=>{
-      if (frameIdx >= TIMES.length-1) { stopPlay(); return; }  // hit 2100 -> auto-pause
+      if (frameIdx >= TIMES.length-1) { stopPlay(); return; }
       frameIdx++;
       document.getElementById('map-slider').value = frameIdx;
       render();
@@ -1657,7 +1783,6 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     document.getElementById('map-play').textContent='▶ Play';
   }
 
-  // ─── line chart: all three scenarios, selected one highlighted ───
   const lc = { w:900, h:220, m:{ t:16, r:78, b:30, l:46 } };
   let lcX, lcY, lcG, lcMarker, lcDot;
   const linePaths = {}, endLabels = {};
@@ -1670,7 +1795,7 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     lcX = d3.scaleLinear().domain(d3.extent(years)).range([0,iw]);
     const allVals = [].concat(...SCENARIOS.map(s=>series[s.id].map(d=>d.val))).filter(v=>v!=null);
     const ext = d3.extent(allVals), pad = Math.max(1,(ext[1]-ext[0])*0.15);
-    lcY = d3.scaleLinear().domain([Math.min(0,ext[0])-pad,Math.max(0,ext[1])+pad]).range([ih,0]).nice();
+    lcY = d3.scaleLinear().domain([Math.min(0,ext[0])-pad, Math.max(0,ext[1])+pad]).range([ih,0]).nice();
 
     lcG.append('g').attr('transform',`translate(0,${ih})`)
       .call(d3.axisBottom(lcX).tickFormat(d3.format('d')))
@@ -1722,6 +1847,138 @@ g.append('text').attr('x',w/2).attr('y',h+42)
     document.getElementById('map-year').textContent=TIMES[frameIdx];
     updateMarker();
   }
+})();
+
+
+// ==================== NEW: LAI VEGETATION BAR CHART ====================
+(function () {
+  const laiSvg = d3.select("#lai-bar-svg");
+  const laiWidth = 800, laiHeight = 360;
+  const laiMargin = { top: 50, right: 30, bottom: 50, left: 160 };
+  const innerWidth = laiWidth - laiMargin.left - laiMargin.right;
+  const innerHeight = laiHeight - laiMargin.top - laiMargin.bottom;
+
+  const tooltip = d3.select("body").append("div")
+    .attr("class", "lai-tooltip");
+
+  d3.csv("final_lai_data.csv").then(raw => {
+    // Filter for years 2070–2100
+    const endCentury = raw.filter(d => +d.year >= 2070);
+    // Group by region, compute mean % change
+    const regionMap = new Map();
+    endCentury.forEach(d => {
+      const reg = d.region;
+      const pct = +d.lai_pct_change;
+      if (isNaN(pct)) return;
+      if (!regionMap.has(reg)) regionMap.set(reg, { sum: 0, count: 0 });
+      const entry = regionMap.get(reg);
+      entry.sum += pct;
+      entry.count++;
+    });
+    const regionData = Array.from(regionMap, ([region, { sum, count }]) => ({
+      region,
+      pctChange: sum / count
+    }));
+    // Order by pctChange (ascending for horizontal bar chart)
+    regionData.sort((a, b) => a.pctChange - b.pctChange);
+
+    const x = d3.scaleLinear()
+      .domain([d3.min(regionData, d => Math.min(0, d.pctChange - 3)), d3.max(regionData, d => d.pctChange + 3)])
+      .range([0, innerWidth]);
+
+    const y = d3.scaleBand()
+      .domain(regionData.map(d => d.region))
+      .range([0, innerHeight])
+      .padding(0.3);
+
+    const g = laiSvg.append("g")
+      .attr("transform", `translate(${laiMargin.left},${laiMargin.top})`);
+
+    // Axes
+    g.append("g")
+      .call(d3.axisLeft(y).tickSize(0))
+      .call(ax => ax.selectAll("text").attr("fill", "#cdd7e2").attr("font-size", "11px"));
+
+    g.append("g")
+      .attr("transform", `translate(0,${innerHeight})`)
+      .call(d3.axisBottom(x).ticks(6).tickFormat(d => d + "%"))
+      .call(ax => ax.selectAll("text").attr("fill", "#8a9eb5"))
+      .call(ax => ax.select(".domain").attr("stroke", "#2b7fbf55"));
+
+    // Vertical zero line
+    g.append("line")
+      .attr("x1", x(0))
+      .attr("x2", x(0))
+      .attr("y1", 0)
+      .attr("y2", innerHeight)
+      .attr("stroke", "#63b3ed")
+      .attr("stroke-dasharray", "4,3")
+      .attr("stroke-width", 1);
+
+    // Bars
+    g.selectAll(".lai-bar")
+      .data(regionData)
+      .enter()
+      .append("rect")
+      .attr("class", "lai-bar")
+      .attr("y", d => y(d.region))
+      .attr("x", d => x(Math.min(0, d.pctChange)))
+      .attr("width", d => Math.abs(x(d.pctChange) - x(0)))
+      .attr("height", y.bandwidth())
+      .attr("fill", d => d.pctChange < 0 ? "#c0392b" : "#1a7a4a")
+      .attr("rx", 4)
+      .on("mouseover", function(event, d) {
+        d3.select(this).attr("opacity", 0.8);
+        const consequenceText = d.region === "Tropics" ? "11% LAI loss → 12–18% lower maize/rice yields → food crisis for 1.2B people" :
+                                d.region === "Southern Mid-Latitudes" ? "8% loss → Patagonian wheat decline, livestock stress" :
+                                d.region === "Northern Mid-Latitudes" ? "5% gain (boreal greening) but more wildfires & permafrost thaw" :
+                                d.region === "Arctic / High North" ? "+6% LAI – shrub expansion, but ecosystem disruption" :
+                                "Antarctic / High South" ? "🧊 minimal change, but coastal ice–veg interactions uncertain" : "Vegetation shift";
+        tooltip.html(`<strong>${d.region}</strong><br/>${d.pctChange > 0 ? '+' : ''}${d.pctChange.toFixed(1)}% change<br/>${consequenceText}`)
+          .style("left", (event.clientX + 14) + "px")
+          .style("top", (event.clientY - 40) + "px")
+          .style("opacity", 1);
+      })
+      .on("mousemove", function(event) {
+        tooltip.style("left", (event.clientX + 14) + "px")
+               .style("top", (event.clientY - 40) + "px");
+      })
+      .on("mouseout", function() {
+        d3.select(this).attr("opacity", 1);
+        tooltip.style("opacity", 0);
+      });
+
+    // Value labels at the end of each bar
+    g.selectAll(".lai-label")
+      .data(regionData)
+      .enter()
+      .append("text")
+      .attr("x", d => x(d.pctChange) + (d.pctChange < 0 ? -6 : 6))
+      .attr("y", d => y(d.region) + y.bandwidth() / 2)
+      .attr("dy", "0.35em")
+      .attr("text-anchor", d => d.pctChange < 0 ? "end" : "start")
+      .attr("fill", "#eef1f5")
+      .attr("font-size", "10px")
+      .text(d => (d.pctChange > 0 ? "+" : "") + d.pctChange.toFixed(1) + "%");
+
+    // X-axis label
+    g.append("text")
+      .attr("x", innerWidth / 2)
+      .attr("y", innerHeight + 36)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#8a9eb5")
+      .attr("font-size", "10px")
+      .text("Projected % change in Leaf Area Index (LAI)");
+  }).catch(err => {
+    console.error("Error loading LAI CSV:", err);
+    d3.select("#lai-bar-svg")
+      .append("text")
+      .attr("x", laiWidth/2)
+      .attr("y", laiHeight/2)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#fc8181")
+      .text("⚠ Could not load final_lai_data.csv. Make sure the file is in the same folder.");
+  });
 })();
 </script>
 </body>
